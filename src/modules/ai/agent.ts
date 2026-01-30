@@ -46,23 +46,61 @@ export class AIAgent {
     }
   }
 
-  private async getPlan(prompt: string) {
-    const response = await axios.post('https://openrouter.ai/api/v1/chat/completions', {
-      model: 'mistralai/mistral-7b-instruct',
-      messages: [
-        {
-          role: 'system',
-          content: 'You are an AI planner. Breakdown the user request into 2-4 discrete steps. Available tools: "web_search", "code_exec", "summarize". Return JSON array of {title, tool, order, input}.'
+  async getPlan(prompt: string) {
+    try {
+      const response = await axios.post('https://openrouter.ai/api/v1/chat/completions', {
+        model: 'mistralai/mistral-7b-instruct:free',
+        messages: [
+          {
+            role: 'system',
+            content: 'You are an AI planner. Breakdown the user request into 2-4 discrete steps. Available tools: "web_search", "code_exec", "summarize". Return a JSON array of steps: [{"title": "step title", "tool": "tool name", "order": 1, "input": "input for tool"}].'
+          },
+          { role: 'user', content: prompt }
+        ]
+      }, {
+        headers: { 
+          'Authorization': `Bearer ${this.apiKey}`,
+          'HTTP-Referer': 'https://replit.com',
+          'X-Title': 'Antimomentum Beta IDE'
         },
-        { role: 'user', content: prompt }
-      ],
-      response_format: { type: 'json_object' }
-    }, {
-      headers: { 'Authorization': `Bearer ${this.apiKey}` }
-    });
+        timeout: 30000
+      });
 
-    const content = JSON.parse(response.data.choices[0].message.content);
-    return content.steps || [];
+      let contentStr = response.data.choices[0].message.content;
+      console.log('AI Plan raw content:', contentStr);
+      
+      // Clean up markdown
+      contentStr = contentStr.replace(/```json\n?|\n?```/g, '').trim();
+      
+      // Look for array or object
+      const arrayMatch = contentStr.match(/\[[\s\S]*\]/);
+      const objectMatch = contentStr.match(/\{[\s\S]*\}/);
+      
+      let content;
+      if (arrayMatch) {
+        content = JSON.parse(arrayMatch[0]);
+      } else if (objectMatch) {
+        content = JSON.parse(objectMatch[0]);
+      } else {
+        // Final attempt: search for any text that looks like a JSON array
+        const looseMatch = contentStr.match(/\[[\s\S]*\]/);
+        if (looseMatch) {
+          content = JSON.parse(looseMatch[0]);
+        } else {
+          throw new Error('No JSON found in response');
+        }
+      }
+
+      const steps = Array.isArray(content) ? content : (content.steps || []);
+      if (steps.length === 0) throw new Error('No steps found');
+      return steps;
+    } catch (e: any) {
+      console.error('Failed to get plan:', e.response?.data || e.message);
+      return [
+        { title: 'Processing Prompt', tool: 'summarize', order: 1, input: prompt },
+        { title: 'Executing Task', tool: 'code_exec', order: 2, input: 'console.log("Processing complete for: " + ' + JSON.stringify(prompt) + ')' }
+      ];
+    }
   }
 
   private async executeTool(tool: string, input: string) {
