@@ -3,6 +3,9 @@ import React from "react";
 import { BackgroundBeams } from "@/components/ui/background-beams";
 import { Input } from "@/components/ui/input";
 
+import { Link } from "wouter";
+import { Button } from "@/components/ui/button";
+
 export function BackgroundBeamsDemo() {
   return (
     <div className="h-screen w-full rounded-md bg-background relative flex flex-col items-center justify-center antialiased">
@@ -18,11 +21,18 @@ export function BackgroundBeamsDemo() {
           password reset emails, or promotional campaigns, MailJet has got you
           covered.
         </p>
-        <Input
-          type="email"
-          placeholder="hi@manuarora.in"
-          className="w-full mt-4 relative z-10"
-        />
+        <div className="mt-4 relative z-10 flex flex-col gap-4">
+          <Input
+            type="email"
+            placeholder="hi@manuarora.in"
+            className="w-full"
+          />
+          <Link href="/~">
+            <Button className="w-full" size="lg">
+              Get Started
+            </Button>
+          </Link>
+        </div>
       </div>
       <BackgroundBeams />
     </div>
