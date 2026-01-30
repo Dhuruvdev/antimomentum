@@ -25,6 +25,7 @@ import {
 import { motion, AnimatePresence } from "framer-motion";
 import { cn } from "@/lib/utils";
 import { SiReplit } from "react-icons/si";
+import { Badge } from "@/components/ui/badge";
 import type { JobResponse } from "@shared/schema";
 
 export default function JobProgress() {
