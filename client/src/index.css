@@ -14,6 +14,8 @@
   --elevate-1: rgba(0,0,0, .03);
   --elevate-2: rgba(0,0,0, .08);
 
+  --neutral-300: 0 0% 83%;
+
   --background: red; /*replace with H S L */
 
   --foreground: red; /*replace with H S L */
@@ -131,6 +133,8 @@
   /* Backgrounds applied on top of other backgrounds when hovered/active */
   --elevate-1: rgba(255,255,255, .04);
   --elevate-2: rgba(255,255,255, .09);
+
+  --neutral-300: 0 0% 83%;
 
   --background: red; /*replace with H S L */
 
