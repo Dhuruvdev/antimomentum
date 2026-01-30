@@ -13,8 +13,8 @@ function Router() {
     <Switch>
       {/* Add pages below */}
       <Route path="/" component={BackgroundBeamsDemo}/>
-      <Route path="/~" component={V0ChatDemo}/>
-      <Route path="/job/:id" component={JobProgress}/>
+      <Route path="/chat" component={V0ChatDemo}/>
+      <Route path="/~" component={JobProgress}/>
       {/* Fallback to 404 */}
       <Route component={NotFound} />
     </Switch>
