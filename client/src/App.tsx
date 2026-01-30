@@ -6,6 +6,7 @@ import { TooltipProvider } from "@/components/ui/tooltip";
 import NotFound from "@/pages/not-found";
 import { V0ChatDemo } from "@/components/v0-chat-demo";
 import { BackgroundBeamsDemo } from "@/components/background-beams-demo";
+import JobProgress from "@/pages/job-progress";
 
 function Router() {
   return (
@@ -13,6 +14,7 @@ function Router() {
       {/* Add pages below */}
       <Route path="/" component={BackgroundBeamsDemo}/>
       <Route path="/~" component={V0ChatDemo}/>
+      <Route path="/job/:id" component={JobProgress}/>
       {/* Fallback to 404 */}
       <Route component={NotFound} />
     </Switch>

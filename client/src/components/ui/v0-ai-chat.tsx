@@ -4,6 +4,8 @@ import { useEffect, useRef, useCallback } from "react";
 import { useState } from "react";
 import { Textarea } from "@/components/ui/textarea";
 import { cn } from "@/lib/utils";
+import { useLocation } from "wouter";
+import { api } from "@shared/routes";
 import {
     ImageIcon,
     FileUp,
@@ -13,6 +15,7 @@ import {
     ArrowUpIcon,
     Paperclip,
     PlusIcon,
+    Loader2
 } from "lucide-react";
 
 interface UseAutoResizeTextareaProps {
@@ -73,18 +76,39 @@ function useAutoResizeTextarea({
 
 export function VercelV0Chat() {
     const [value, setValue] = useState("");
+    const [isSubmitting, setIsSubmitting] = useState(false);
+    const [, setLocation] = useLocation();
     const { textareaRef, adjustHeight } = useAutoResizeTextarea({
         minHeight: 60,
         maxHeight: 200,
     });
 
+    const handleSubmit = async () => {
+        if (!value.trim() || isSubmitting) return;
+        
+        setIsSubmitting(true);
+        try {
+            const res = await fetch(api.jobs.create.path, {
+                method: api.jobs.create.method,
+                headers: { "Content-Type": "application/json" },
+                body: JSON.stringify({ prompt: value.trim() }),
+            });
+            
+            if (res.ok) {
+                const job = await res.json();
+                setLocation(`/job/${job.id}`);
+            }
+        } catch (error) {
+            console.error("Failed to create job:", error);
+        } finally {
+            setIsSubmitting(false);
+        }
+    };
+
     const handleKeyDown = (e: React.KeyboardEvent<HTMLTextAreaElement>) => {
         if (e.key === "Enter" && !e.shiftKey) {
             e.preventDefault();
-            if (value.trim()) {
-                setValue("");
-                adjustHeight(true);
-            }
+            handleSubmit();
         }
     };
 
@@ -145,6 +169,8 @@ export function VercelV0Chat() {
                             </button>
                             <button
                                 type="button"
+                                onClick={handleSubmit}
+                                disabled={!value.trim() || isSubmitting}
                                 className={cn(
                                     "p-1.5 md:px-2 md:py-1.5 rounded-lg text-sm transition-colors border border-zinc-700 hover:border-zinc-600 hover:bg-zinc-800 flex items-center justify-between gap-1",
                                     value.trim()
@@ -152,14 +178,18 @@ export function VercelV0Chat() {
                                         : "text-zinc-400"
                                 )}
                             >
-                                <ArrowUpIcon
-                                    className={cn(
-                                        "w-4 h-4",
-                                        value.trim()
-                                            ? "text-black"
-                                            : "text-zinc-400"
-                                    )}
-                                />
+                                {isSubmitting ? (
+                                    <Loader2 className="w-4 h-4 animate-spin text-zinc-400" />
+                                ) : (
+                                    <ArrowUpIcon
+                                        className={cn(
+                                            "w-4 h-4",
+                                            value.trim()
+                                                ? "text-black"
+                                                : "text-zinc-400"
+                                        )}
+                                    />
+                                )}
                                 <span className="sr-only">Send</span>
                             </button>
                         </div>
