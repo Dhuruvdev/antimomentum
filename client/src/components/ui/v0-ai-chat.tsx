@@ -96,7 +96,8 @@ export function VercelV0Chat() {
             
             if (res.ok) {
                 const job = await res.json();
-                setLocation(`/job/${job.id}`);
+                localStorage.setItem("active_job_id", job.id);
+                setLocation("/~");
             }
         } catch (error) {
             console.error("Failed to create job:", error);

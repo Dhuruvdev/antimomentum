@@ -28,13 +28,14 @@ import { useState, useRef, useEffect, useCallback } from "react";
 import { Textarea } from "@/components/ui/textarea";
 
 export default function JobProgress() {
-  const { id } = useParams<{ id: string }>();
+  const { id: routeId } = useParams<{ id: string }>();
+  const activeJobId = routeId || localStorage.getItem("active_job_id") || "1";
   const [, setLocation] = useLocation();
   const [inputValue, setInputValue] = useState("");
   const textareaRef = useRef<HTMLTextAreaElement>(null);
 
   const { data: job, isLoading } = useQuery<JobResponse>({
-    queryKey: [buildUrl(api.jobs.get.path, { id: id! })],
+    queryKey: [buildUrl(api.jobs.get.path, { id: activeJobId })],
     refetchInterval: (query) => {
       const job = query.state.data as JobResponse | undefined;
       return job?.status === "completed" || job?.status === "failed" ? false : 1000;
@@ -53,7 +54,8 @@ export default function JobProgress() {
     },
     onSuccess: (data) => {
       queryClient.invalidateQueries({ queryKey: [api.jobs.create.path] });
-      setLocation(`/job/${data.id}`);
+      localStorage.setItem("active_job_id", data.id);
+      setLocation("/~");
       setInputValue("");
     },
   });
@@ -129,7 +131,7 @@ export default function JobProgress() {
                  <div className="w-5 h-px bg-neutral-500 relative after:content-[''] after:absolute after:top-[-4px] after:left-0 after:w-5 after:h-px after:bg-neutral-500 before:content-[''] before:absolute before:top-[4px] before:left-0 before:w-5 before:h-px before:bg-neutral-500"></div>
                </div>
                <div className="flex-1 min-w-0">
-                 <p className="text-sm text-white truncate font-medium">Task Context</p>
+                 <p className="text-sm text-white truncate font-medium">{job.prompt}</p>
                  <div className="flex items-center gap-2 mt-1">
                     <Zap className="w-3 h-3 text-neutral-500" />
                     <Globe className="w-3 h-3 text-neutral-500" />
