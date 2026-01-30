@@ -21,14 +21,15 @@ import {
 import { motion, AnimatePresence } from "framer-motion";
 import { cn } from "@/lib/utils";
 import { SiReplit } from "react-icons/si";
+import type { JobResponse } from "@shared/schema";
 
 export default function JobProgress() {
   const { id } = useParams<{ id: string }>();
   
-  const { data: job, isLoading } = useQuery({
+  const { data: job, isLoading } = useQuery<JobResponse>({
     queryKey: [buildUrl(api.jobs.get.path, { id: id! })],
     refetchInterval: (query) => {
-      const job = query.state.data as any;
+      const job = query.state.data as JobResponse | undefined;
       return job?.status === "completed" || job?.status === "failed" ? false : 1000;
     },
   });
