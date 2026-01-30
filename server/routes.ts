@@ -3,6 +3,8 @@ import { createServer, type Server } from "http";
 import { storage } from "./storage";
 import { api } from "@shared/routes";
 
+import { agent } from "../src/modules/ai/agent";
+
 export async function registerRoutes(
   httpServer: Server,
   app: Express
@@ -10,8 +12,8 @@ export async function registerRoutes(
   app.post(api.jobs.create.path, async (req, res) => {
     const job = await storage.createJob(req.body);
     
-    // Start background simulation
-    simulateAgent(job.id);
+    // Run real agent processing
+    agent.processJob(job.id, job.prompt);
     
     res.status(201).json(job);
   });
