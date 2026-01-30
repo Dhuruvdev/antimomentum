@@ -95,6 +95,7 @@ export class AIAgent {
       const reasoning = content.reasoning || "Planning execution steps based on user prompt.";
       
       console.log('Agent reasoning:', reasoning);
+      await storage.updateJobReasoning(jobId, reasoning);
       
       if (steps.length === 0) throw new Error('No steps found');
       return steps;

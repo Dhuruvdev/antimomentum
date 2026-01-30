@@ -141,14 +141,32 @@ export default function JobProgress() {
         </div>
 
         {/* Action Pill */}
-        <div className="flex items-center gap-2 relative z-10">
-          <div className="flex items-center gap-1.5 px-3 py-1.5 bg-neutral-900 rounded-full border border-neutral-800 cursor-pointer hover:bg-neutral-800 transition-colors">
-            <div className="flex gap-1 items-center">
-              <ChevronDown className="w-3 h-3 text-neutral-500" />
-              <Brain className="w-3.5 h-3.5 text-neutral-500" />
+        <div className="flex flex-col gap-4 relative z-10">
+          <div className="flex items-center gap-2">
+            <div className="flex items-center gap-1.5 px-3 py-1.5 bg-neutral-900 rounded-full border border-neutral-800 cursor-pointer hover:bg-neutral-800 transition-colors">
+              <div className="flex gap-1 items-center">
+                <ChevronDown className="w-3 h-3 text-neutral-500" />
+                <Brain className="w-3.5 h-3.5 text-neutral-500" />
+              </div>
+              <span className="text-xs text-neutral-500 font-medium">{job.steps.length} actions</span>
             </div>
-            <span className="text-xs text-neutral-500 font-medium">{job.steps.length} actions</span>
           </div>
+
+          {job.reasoning && (
+            <motion.div 
+              initial={{ opacity: 0, y: 10 }}
+              animate={{ opacity: 1, y: 0 }}
+              className="bg-neutral-950 border border-neutral-900 rounded-xl p-4"
+            >
+              <div className="flex items-center gap-2 mb-2">
+                <Brain className="w-4 h-4 text-primary" />
+                <span className="text-xs font-bold uppercase tracking-wider text-neutral-500">Agent Reasoning</span>
+              </div>
+              <p className="text-sm text-neutral-300 leading-relaxed">
+                {job.reasoning}
+              </p>
+            </motion.div>
+          )}
         </div>
 
         {/* Execution Log */}

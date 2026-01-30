@@ -6,6 +6,7 @@ export const jobs = pgTable("jobs", {
   id: serial("id").primaryKey(),
   prompt: text("prompt").notNull(),
   status: text("status", { enum: ["pending", "planning", "executing", "completed", "failed"] }).notNull().default("pending"),
+  reasoning: text("reasoning"),
   createdAt: timestamp("created_at").defaultNow(),
 });
 

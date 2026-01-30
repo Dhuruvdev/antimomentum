@@ -6,6 +6,7 @@ export interface IStorage {
   createJob(job: InsertJob): Promise<Job>;
   getJob(id: number): Promise<JobResponse | undefined>;
   updateJobStatus(id: number, status: Job["status"]): Promise<void>;
+  updateJobReasoning(id: number, reasoning: string): Promise<void>;
   createStep(step: InsertStep): Promise<Step>;
   updateStepStatus(id: number, status: Step["status"], output?: string): Promise<void>;
 }
@@ -25,6 +26,10 @@ export class DatabaseStorage implements IStorage {
 
   async updateJobStatus(id: number, status: Job["status"]): Promise<void> {
     await db.update(jobs).set({ status }).where(eq(jobs.id, id));
+  }
+
+  async updateJobReasoning(id: number, reasoning: string): Promise<void> {
+    await db.update(jobs).set({ reasoning }).where(eq(jobs.id, id));
   }
 
   async createStep(insertStep: InsertStep): Promise<Step> {
