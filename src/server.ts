@@ -30,6 +30,11 @@ fastify.register(authRoutes);
 fastify.register(workspaceRoutes);
 fastify.register(aiRoutes);
 
+// Redirects
+fastify.get('/~', async (request, reply) => {
+  return reply.redirect('/job/10');
+});
+
 // Health Check
 fastify.get('/health', async () => ({ status: 'ok' }));
 
