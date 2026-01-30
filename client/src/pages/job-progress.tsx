@@ -1,6 +1,8 @@
-import { useQuery } from "@tanstack/react-query";
-import { useParams } from "wouter";
+import { useQuery, useMutation } from "@tanstack/react-query";
+import { useParams, useLocation } from "wouter";
 import { api, buildUrl } from "@shared/routes";
+import { queryClient } from "@/lib/queryClient";
+import { BackgroundBeams } from "@/components/ui/background-beams";
 import { 
   Loader2, 
   CheckCircle2, 
@@ -12,19 +14,25 @@ import {
   Paperclip,
   Zap,
   Globe,
-  Monitor,
   MessageSquarePlus,
   ChevronDown,
-  Brain
+  Brain,
+  ArrowUpIcon
 } from "lucide-react";
 import { motion, AnimatePresence } from "framer-motion";
 import { cn } from "@/lib/utils";
 import { SiReplit } from "react-icons/si";
+import { Badge } from "@/components/ui/badge";
 import type { JobResponse } from "@shared/schema";
+import { useState, useRef, useEffect, useCallback } from "react";
+import { Textarea } from "@/components/ui/textarea";
 
 export default function JobProgress() {
   const { id } = useParams<{ id: string }>();
-  
+  const [, setLocation] = useLocation();
+  const [inputValue, setInputValue] = useState("");
+  const textareaRef = useRef<HTMLTextAreaElement>(null);
+
   const { data: job, isLoading } = useQuery<JobResponse>({
     queryKey: [buildUrl(api.jobs.get.path, { id: id! })],
     refetchInterval: (query) => {
@@ -32,6 +40,46 @@ export default function JobProgress() {
       return job?.status === "completed" || job?.status === "failed" ? false : 1000;
     },
   });
+
+  const mutation = useMutation({
+    mutationFn: async (prompt: string) => {
+      const res = await fetch(api.jobs.create.path, {
+        method: api.jobs.create.method,
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ prompt }),
+      });
+      if (!res.ok) throw new Error("Failed to create job");
+      return res.json();
+    },
+    onSuccess: (data) => {
+      queryClient.invalidateQueries({ queryKey: [api.jobs.create.path] });
+      setLocation(`/job/${data.id}`);
+      setInputValue("");
+    },
+  });
+
+  const handleSubmit = () => {
+    if (!inputValue.trim() || mutation.isPending) return;
+    mutation.mutate(inputValue.trim());
+  };
+
+  const handleKeyDown = (e: React.KeyboardEvent<HTMLTextAreaElement>) => {
+    if (e.key === "Enter" && !e.shiftKey) {
+      e.preventDefault();
+      handleSubmit();
+    }
+  };
+
+  const adjustHeight = useCallback(() => {
+    const textarea = textareaRef.current;
+    if (!textarea) return;
+    textarea.style.height = "auto";
+    textarea.style.height = `${Math.min(textarea.scrollHeight, 200)}px`;
+  }, []);
+
+  useEffect(() => {
+    adjustHeight();
+  }, [inputValue, adjustHeight]);
 
   if (isLoading || !job) {
     return (
@@ -71,19 +119,21 @@ export default function JobProgress() {
 
       {/* Main Content Area */}
       <main className="flex-1 overflow-y-auto p-4 space-y-6 custom-scrollbar pb-40">
-        {/* User Instruction Bubble (Matching Screenshot) */}
-        <div className="flex justify-end mb-8">
+        <BackgroundBeams className="opacity-20 pointer-events-none" />
+        
+        {/* User Instruction Bubble */}
+        <div className="flex justify-end mb-8 relative z-10">
            <div className="bg-neutral-900 border border-neutral-800 rounded-2xl p-3 max-w-[85%] relative shadow-lg">
              <div className="flex items-center gap-3">
                <div className="w-10 h-10 bg-black rounded-lg flex items-center justify-center border border-neutral-800">
                  <div className="w-5 h-px bg-neutral-500 relative after:content-[''] after:absolute after:top-[-4px] after:left-0 after:w-5 after:h-px after:bg-neutral-500 before:content-[''] before:absolute before:top-[4px] before:left-0 before:w-5 before:h-px before:bg-neutral-500"></div>
                </div>
                <div className="flex-1 min-w-0">
-                 <p className="text-sm text-white truncate font-medium">Pasted-You-are-...</p>
+                 <p className="text-sm text-white truncate font-medium">Task Context</p>
                  <div className="flex items-center gap-2 mt-1">
                     <Zap className="w-3 h-3 text-neutral-500" />
                     <Globe className="w-3 h-3 text-neutral-500" />
-                    <span className="text-[10px] text-neutral-600">29 minutes ago</span>
+                    <span className="text-[10px] text-neutral-600">Active Session</span>
                  </div>
                </div>
              </div>
@@ -91,7 +141,7 @@ export default function JobProgress() {
         </div>
 
         {/* Action Pill */}
-        <div className="flex items-center gap-2">
+        <div className="flex items-center gap-2 relative z-10">
           <div className="flex items-center gap-1.5 px-3 py-1.5 bg-neutral-900 rounded-full border border-neutral-800 cursor-pointer hover:bg-neutral-800 transition-colors">
             <div className="flex gap-1 items-center">
               <ChevronDown className="w-3 h-3 text-neutral-500" />
@@ -102,14 +152,10 @@ export default function JobProgress() {
         </div>
 
         {/* Execution Log */}
-        <div className="space-y-6">
+        <div className="space-y-6 relative z-10">
            <div className="text-white leading-relaxed text-[15px] space-y-4">
-              <p>
-                I will integrate the <span className="text-neutral-400">BackgroundBeams</span> component into your project. 
-                Since the project is already set up with shadcn/ui and Tailwind CSS, I will add the component and a demo page.
-              </p>
-              <p>
-                I'll start by checking the existing configuration and dependencies.
+              <p className="italic text-neutral-400">
+                "{job.prompt}"
               </p>
            </div>
 
@@ -144,36 +190,76 @@ export default function JobProgress() {
 
       {/* Floating Bottom Bar */}
       <div className="fixed bottom-0 left-0 right-0 p-4 bg-gradient-to-t from-black via-black to-transparent z-50">
-        <div className="max-w-4xl mx-auto space-y-4">
-          <div className="relative bg-neutral-900 border border-neutral-800 rounded-xl overflow-hidden shadow-2xl">
-            <div className="px-4 py-3 text-sm text-neutral-500 italic">
-              Make lightweight changes, quickly...
+        <div className="max-w-4xl mx-auto">
+          <div className="relative bg-neutral-900 rounded-xl border border-neutral-800 focus-within:border-neutral-700 transition-colors">
+            <div className="overflow-y-auto">
+              <Textarea
+                ref={textareaRef}
+                value={inputValue}
+                onChange={(e) => setInputValue(e.target.value)}
+                onKeyDown={handleKeyDown}
+                placeholder="Ask Antimomentum to Write Something..."
+                className={cn(
+                  "w-full px-4 py-3",
+                  "resize-none",
+                  "bg-transparent",
+                  "border-none",
+                  "text-white text-sm md:text-base",
+                  "focus:outline-none",
+                  "focus-visible:ring-0 focus-visible:ring-offset-0",
+                  "placeholder:text-neutral-500 placeholder:text-sm",
+                  "min-h-[60px]"
+                )}
+                style={{
+                  overflow: "hidden",
+                }}
+              />
             </div>
-            <div className="flex items-center justify-between px-3 py-2 border-t border-neutral-800">
-              <div className="flex items-center gap-1">
-                <button className="flex items-center gap-1.5 px-2.5 py-1.5 bg-neutral-800 rounded-lg text-xs font-medium text-white border border-neutral-700">
-                  <SiReplit className="w-3.5 h-3.5 text-white" />
-                  Build
-                  <ChevronDown className="w-3 h-3 text-neutral-500" />
-                </button>
-                <button className="p-2 text-neutral-500">
-                  <Paperclip className="w-4 h-4" />
+
+            <div className="flex items-center justify-between p-2 md:p-3">
+              <div className="flex items-center gap-1 md:gap-2">
+                <button
+                  type="button"
+                  className="group p-2 hover:bg-neutral-800 rounded-lg transition-colors flex items-center gap-1"
+                >
+                  <Paperclip className="w-4 h-4 text-white" />
+                  <span className="text-xs text-zinc-400 hidden sm:group-hover:inline transition-opacity">
+                    Attach
+                  </span>
                 </button>
               </div>
-              <div className="flex items-center gap-2">
-                <div className="flex items-center gap-2 bg-neutral-800 rounded-lg p-1">
-                  <button className="p-1.5 bg-neutral-700 text-white rounded-md">
-                    <Zap className="w-4 h-4 fill-current" />
-                  </button>
-                  <button className="p-1.5 text-neutral-500">
-                    <div className="flex flex-col gap-0.5">
-                      <div className="w-3 h-[1.5px] bg-current"></div>
-                      <div className="w-2 h-[1.5px] bg-current"></div>
-                    </div>
-                  </button>
-                </div>
-                <button className="p-2 bg-neutral-800 rounded-lg text-neutral-500">
+              <div className="flex items-center gap-1 md:gap-2">
+                <button
+                  type="button"
+                  className="px-2 py-1 rounded-lg text-xs md:text-sm text-zinc-400 transition-colors border border-dashed border-zinc-700 hover:border-zinc-600 hover:bg-zinc-800 flex items-center justify-between gap-1"
+                >
                   <Plus className="w-4 h-4" />
+                  <span className="hidden xs:inline">Project</span>
+                </button>
+                <button
+                  type="button"
+                  onClick={handleSubmit}
+                  disabled={!inputValue.trim() || mutation.isPending}
+                  className={cn(
+                    "p-1.5 md:px-2 md:py-1.5 rounded-lg text-sm transition-colors border border-zinc-700 hover:border-zinc-600 hover:bg-zinc-800 flex items-center justify-between gap-1",
+                    inputValue.trim()
+                      ? "bg-white text-black"
+                      : "text-zinc-400"
+                  )}
+                >
+                  {mutation.isPending ? (
+                    <Loader2 className="w-4 h-4 animate-spin text-zinc-400" />
+                  ) : (
+                    <ArrowUpIcon
+                      className={cn(
+                        "w-4 h-4",
+                        inputValue.trim()
+                          ? "text-black"
+                          : "text-zinc-400"
+                      )}
+                    />
+                  )}
+                  <span className="sr-only">Send</span>
                 </button>
               </div>
             </div>
