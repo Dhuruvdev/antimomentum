@@ -15,7 +15,7 @@ export class AIAgent {
     try {
       await storage.updateJobStatus(jobId, 'planning');
       
-      const plan = await this.getPlan(prompt);
+      const plan = await this.getPlan(prompt, jobId);
       
       for (const stepInfo of plan) {
         const step = await storage.createStep({
@@ -46,7 +46,7 @@ export class AIAgent {
     }
   }
 
-  async getPlan(prompt: string) {
+  async getPlan(prompt: string, jobId: number) {
     try {
       const response = await axios.post('https://openrouter.ai/api/v1/chat/completions', {
         model: 'google/gemini-2.0-pro-exp-02-05:free',
