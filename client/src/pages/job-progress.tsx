@@ -28,14 +28,13 @@ import { useState, useRef, useEffect, useCallback } from "react";
 import { Textarea } from "@/components/ui/textarea";
 
 export default function JobProgress() {
-  const { id: routeId } = useParams<{ id: string }>();
-  const activeJobId = routeId || localStorage.getItem("active_job_id") || "1";
+  const { id } = useParams<{ id: string }>();
   const [, setLocation] = useLocation();
   const [inputValue, setInputValue] = useState("");
   const textareaRef = useRef<HTMLTextAreaElement>(null);
 
   const { data: job, isLoading } = useQuery<JobResponse>({
-    queryKey: [buildUrl(api.jobs.get.path, { id: activeJobId })],
+    queryKey: [buildUrl(api.jobs.get.path, { id: id! })],
     refetchInterval: (query) => {
       const job = query.state.data as JobResponse | undefined;
       return job?.status === "completed" || job?.status === "failed" ? false : 1000;
@@ -54,8 +53,7 @@ export default function JobProgress() {
     },
     onSuccess: (data) => {
       queryClient.invalidateQueries({ queryKey: [api.jobs.create.path] });
-      localStorage.setItem("active_job_id", data.id);
-      setLocation("/~");
+      setLocation(`/job/${data.id}`);
       setInputValue("");
     },
   });
