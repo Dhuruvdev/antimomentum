@@ -105,7 +105,7 @@ export function VercelV0Chat() {
                                 adjustHeight();
                             }}
                             onKeyDown={handleKeyDown}
-                            placeholder="Ask v0 a question..."
+                            placeholder="Ask Antimomentum to Write Something..."
                             className={cn(
                                 "w-full px-4 py-3",
                                 "resize-none",
