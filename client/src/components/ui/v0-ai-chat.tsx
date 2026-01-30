@@ -89,8 +89,8 @@ export function VercelV0Chat() {
     };
 
     return (
-        <div className="flex flex-col items-center w-full max-w-4xl mx-auto p-4 space-y-8">
-            <h1 className="text-4xl font-bold text-black dark:text-white">
+        <div className="flex flex-col items-center w-full max-w-4xl mx-auto p-4 space-y-6 md:space-y-8">
+            <h1 className="text-2xl md:text-4xl font-bold text-black dark:text-white text-center">
                 What can I help you ship?
             </h1>
 
@@ -111,7 +111,7 @@ export function VercelV0Chat() {
                                 "resize-none",
                                 "bg-transparent",
                                 "border-none",
-                                "text-white text-sm",
+                                "text-white text-sm md:text-base",
                                 "focus:outline-none",
                                 "focus-visible:ring-0 focus-visible:ring-offset-0",
                                 "placeholder:text-neutral-500 placeholder:text-sm",
@@ -123,30 +123,30 @@ export function VercelV0Chat() {
                         />
                     </div>
 
-                    <div className="flex items-center justify-between p-3">
-                        <div className="flex items-center gap-2">
+                    <div className="flex items-center justify-between p-2 md:p-3">
+                        <div className="flex items-center gap-1 md:gap-2">
                             <button
                                 type="button"
                                 className="group p-2 hover:bg-neutral-800 rounded-lg transition-colors flex items-center gap-1"
                             >
                                 <Paperclip className="w-4 h-4 text-white" />
-                                <span className="text-xs text-zinc-400 hidden group-hover:inline transition-opacity">
+                                <span className="text-xs text-zinc-400 hidden sm:group-hover:inline transition-opacity">
                                     Attach
                                 </span>
                             </button>
                         </div>
-                        <div className="flex items-center gap-2">
+                        <div className="flex items-center gap-1 md:gap-2">
                             <button
                                 type="button"
-                                className="px-2 py-1 rounded-lg text-sm text-zinc-400 transition-colors border border-dashed border-zinc-700 hover:border-zinc-600 hover:bg-zinc-800 flex items-center justify-between gap-1"
+                                className="px-2 py-1 rounded-lg text-xs md:text-sm text-zinc-400 transition-colors border border-dashed border-zinc-700 hover:border-zinc-600 hover:bg-zinc-800 flex items-center justify-between gap-1"
                             >
                                 <PlusIcon className="w-4 h-4" />
-                                Project
+                                <span className="hidden xs:inline">Project</span>
                             </button>
                             <button
                                 type="button"
                                 className={cn(
-                                    "px-1.5 py-1.5 rounded-lg text-sm transition-colors border border-zinc-700 hover:border-zinc-600 hover:bg-zinc-800 flex items-center justify-between gap-1",
+                                    "p-1.5 md:px-2 md:py-1.5 rounded-lg text-sm transition-colors border border-zinc-700 hover:border-zinc-600 hover:bg-zinc-800 flex items-center justify-between gap-1",
                                     value.trim()
                                         ? "bg-white text-black"
                                         : "text-zinc-400"
@@ -166,7 +166,7 @@ export function VercelV0Chat() {
                     </div>
                 </div>
 
-                <div className="flex items-center justify-center gap-3 mt-4">
+                <div className="flex flex-wrap items-center justify-center gap-2 md:gap-3 mt-4 md:mt-6">
                     <ActionButton
                         icon={<ImageIcon className="w-4 h-4" />}
                         label="Clone a Screenshot"
