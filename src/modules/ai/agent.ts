@@ -53,7 +53,7 @@ export class AIAgent {
         messages: [
           {
             role: 'system',
-            content: 'You are an AI planner. Breakdown the user request into 2-4 discrete steps. Available tools: "web_search", "code_exec", "summarize". Return a JSON array of steps: [{"title": "step title", "tool": "tool name", "order": 1, "input": "input for tool"}].'
+            content: 'You are an AI planner. Before providing the plan, you must perform "self-thinking" to reason about the task. Your response MUST be a JSON object with two fields: "reasoning" (a string explaining your thought process) and "steps" (an array of step objects). Available tools: "web_search", "code_exec", "summarize". Each step object must have: "title", "tool", "order", and "input". Example format: {"reasoning": "I need to search for X, then summarize Y...", "steps": [{"title": "Search", "tool": "web_search", "order": 1, "input": "query"}]}'
           },
           { role: 'user', content: prompt }
         ]
@@ -91,7 +91,11 @@ export class AIAgent {
         }
       }
 
-      const steps = Array.isArray(content) ? content : (content.steps || []);
+      const steps = content.steps || (Array.isArray(content) ? content : []);
+      const reasoning = content.reasoning || "Planning execution steps based on user prompt.";
+      
+      console.log('Agent reasoning:', reasoning);
+      
       if (steps.length === 0) throw new Error('No steps found');
       return steps;
     } catch (e: any) {
