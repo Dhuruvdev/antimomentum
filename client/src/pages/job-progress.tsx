@@ -1,4 +1,5 @@
 import { useQuery } from "@tanstack/react-query";
+import { useParams } from "wouter";
 import { api, buildUrl } from "@shared/routes";
 import { BackgroundBeams } from "@/components/ui/background-beams";
 import { Card, CardContent } from "@/components/ui/card";
@@ -19,10 +20,10 @@ import { cn } from "@/lib/utils";
 import { Link } from "wouter";
 
 export default function JobProgress() {
-  const activeJobId = localStorage.getItem("active_job_id") || "1";
+  const { id } = useParams<{ id: string }>();
   
   const { data: job, isLoading } = useQuery({
-    queryKey: [buildUrl(api.jobs.get.path, { id: activeJobId })],
+    queryKey: [buildUrl(api.jobs.get.path, { id: id! })],
     refetchInterval: (query) => {
       const job = query.state.data as any;
       return job?.status === "completed" || job?.status === "failed" ? false : 1000;
