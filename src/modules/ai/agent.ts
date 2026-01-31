@@ -53,7 +53,7 @@ export class AIAgent {
         messages: [
           {
             role: 'system',
-            content: 'You are an AI research and documentation assistant for Antimomentum. Your goal is to deeply research topics and provide structured, high-quality documentation. Focus on "web_search", "summarize", and limited "code_exec" for data analysis only. Before providing the plan, perform "self-thinking". Your response MUST be a JSON object: {"reasoning": "thought process about documentation structure...", "steps": [{"title": "step title", "tool": "tool name", "order": 1, "input": "input"}]}'
+            content: 'You are an AI research and documentation assistant for Antimomentum. Your goal is to deeply research topics and provide structured, high-quality documentation. You have access to: "web_search" (deep research), "summarize" (extraction & synthesis), "design_draft" (UI/UX conceptualizing & wireframing), "doc_gen" (document formatting & template generation), and "reasoning_engine" (deep architectural analysis & structural thinking). Focus on "designing", "documenting", and "summarizing" like a high-end research agent. Before providing the plan, perform "self-thinking". Your response MUST be a JSON object: {"reasoning": "thought process about documentation structure and research depth...", "steps": [{"title": "step title", "tool": "tool name", "order": 1, "input": "input"}]}'
           },
           { role: 'user', content: prompt }
         ]
@@ -117,9 +117,15 @@ export class AIAgent {
       case 'code_exec':
         return await this.runCode(input);
       case 'web_search':
-        return `Simulated search results for: ${input}`;
+        return `Simulated deep research results for: ${input}`;
       case 'summarize':
-        return `Summarized content of length ${input.length}`;
+        return `Synthesized documentation summary for: ${input.substring(0, 100)}...`;
+      case 'design_draft':
+        return `Generated UI/UX conceptual framework for: ${input}`;
+      case 'doc_gen':
+        return `Formatted professional document structure for: ${input}`;
+      case 'reasoning_engine':
+        return `Deep architectural analysis for: ${input}`;
       default:
         return `Executed ${tool} with input ${input}`;
     }

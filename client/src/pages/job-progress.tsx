@@ -24,8 +24,36 @@ import { cn } from "@/lib/utils";
 import { SiReplit } from "react-icons/si";
 import { Badge } from "@/components/ui/badge";
 import type { JobResponse } from "@shared/schema";
-import { useState, useRef, useEffect, useCallback } from "react";
+import { useState, useRef, useEffect, useCallback, memo, useMemo } from "react";
 import { Textarea } from "@/components/ui/textarea";
+
+const TypingAnimation = memo(({ text }: { text: string }) => {
+  const [displayedText, setDisplayedText] = useState("");
+  const [currentIndex, setCurrentIndex] = useState(0);
+
+  useEffect(() => {
+    if (currentIndex < text.length) {
+      const timeout = setTimeout(() => {
+        setDisplayedText(prev => prev + text[currentIndex]);
+        setCurrentIndex(prev => prev + 1);
+      }, 10);
+      return () => clearTimeout(timeout);
+    }
+  }, [currentIndex, text]);
+
+  return (
+    <div className="prose prose-invert max-w-none">
+      {displayedText}
+      {currentIndex < text.length && (
+        <motion.span
+          animate={{ opacity: [0, 1, 0] }}
+          transition={{ repeat: Infinity, duration: 0.8 }}
+          className="inline-block w-1.5 h-4 bg-primary ml-1 align-middle"
+        />
+      )}
+    </div>
+  );
+});
 
 export default function JobProgress() {
   const { id } = useParams<{ id: string }>();
@@ -194,9 +222,7 @@ export default function JobProgress() {
                           animate={{ opacity: 1 }}
                           className="mt-4 p-5 bg-neutral-900/50 border border-neutral-800 rounded-2xl text-neutral-300 text-[15px] leading-relaxed font-sans shadow-inner"
                         >
-                          <div className="prose prose-invert max-w-none">
-                            {step.output}
-                          </div>
+                          <TypingAnimation text={step.output} />
                         </motion.div>
                       )}
                    </div>
