@@ -17,8 +17,12 @@ import {
   MessageSquarePlus,
   ChevronDown,
   Brain,
-  ArrowUpIcon
+  ArrowUpIcon,
+  Download,
+  FileText,
+  FileCode
 } from "lucide-react";
+import { exportToPdf, exportToDocx } from "@/lib/export-utils";
 import { motion, AnimatePresence } from "framer-motion";
 import { cn } from "@/lib/utils";
 import { SiReplit } from "react-icons/si";
@@ -217,13 +221,31 @@ export default function JobProgress() {
                       )}>{step.title}</h3>
                       
                       {step.output && (
-                        <motion.div 
-                          initial={{ opacity: 0 }}
-                          animate={{ opacity: 1 }}
-                          className="mt-4 p-5 bg-neutral-900/50 border border-neutral-800 rounded-2xl text-neutral-300 text-[15px] leading-relaxed font-sans shadow-inner"
-                        >
-                          <TypingAnimation text={step.output} />
-                        </motion.div>
+                        <div className="relative group/content">
+                          <motion.div 
+                            initial={{ opacity: 0 }}
+                            animate={{ opacity: 1 }}
+                            className="mt-4 p-5 bg-neutral-900/50 border border-neutral-800 rounded-2xl text-neutral-300 text-[15px] leading-relaxed font-sans shadow-inner"
+                          >
+                            <TypingAnimation text={step.output} />
+                          </motion.div>
+                          <div className="absolute top-6 right-2 flex gap-2 opacity-0 group-hover/content:opacity-100 transition-opacity">
+                            <button 
+                              onClick={() => exportToPdf(step.title, step.output!)}
+                              className="p-1.5 bg-black/50 hover:bg-black rounded-lg border border-neutral-800 text-neutral-400 hover:text-white transition-colors"
+                              title="Export to PDF"
+                            >
+                              <FileCode className="w-3.5 h-3.5" />
+                            </button>
+                            <button 
+                              onClick={() => exportToDocx(step.title, step.output!)}
+                              className="p-1.5 bg-black/50 hover:bg-black rounded-lg border border-neutral-800 text-neutral-400 hover:text-white transition-colors"
+                              title="Export to Word"
+                            >
+                              <FileText className="w-3.5 h-3.5" />
+                            </button>
+                          </div>
+                        </div>
                       )}
                    </div>
                  </div>
