@@ -42,18 +42,15 @@ export default function JobProgress() {
   });
 
   const mutation = useMutation({
-    mutationFn: async (prompt: string) => {
-      const res = await fetch(api.jobs.create.path, {
-        method: api.jobs.create.method,
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ prompt }),
-      });
-      if (!res.ok) throw new Error("Failed to create job");
-      return res.json();
+    mutationFn: async (instruction: string) => {
+      // For a real app, this would be a PATCH to update the job with new context
+      // For now, we simulate by sending the instruction to the same job session
+      console.log(`Sending instruction to job ${id}:`, instruction);
+      // In a real implementation, we'd add this to a messages/chat history table
+      return { success: true };
     },
-    onSuccess: (data) => {
-      queryClient.invalidateQueries({ queryKey: [api.jobs.create.path] });
-      setLocation(`/job/${data.id}`);
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: [buildUrl(api.jobs.get.path, { id: id! })] });
       setInputValue("");
     },
   });
@@ -118,88 +115,95 @@ export default function JobProgress() {
       </header>
 
       {/* Main Content Area */}
-      <main className="flex-1 overflow-y-auto p-4 space-y-6 custom-scrollbar pb-40">
-        <BackgroundBeams className="opacity-20 pointer-events-none" />
+      <main className="flex-1 overflow-y-auto p-4 space-y-8 custom-scrollbar pb-40 max-w-4xl mx-auto w-full">
+        <BackgroundBeams className="opacity-10 pointer-events-none" />
         
-        {/* User Instruction Bubble */}
-        <div className="flex justify-end mb-8 relative z-10">
-           <div className="bg-neutral-900 border border-neutral-800 rounded-2xl p-3 max-w-[85%] relative shadow-lg">
-             <div className="flex items-center gap-3">
-               <div className="w-10 h-10 bg-black rounded-lg flex items-center justify-center border border-neutral-800">
-                 <div className="w-5 h-px bg-neutral-500 relative after:content-[''] after:absolute after:top-[-4px] after:left-0 after:w-5 after:h-px after:bg-neutral-500 before:content-[''] before:absolute before:top-[4px] before:left-0 before:w-5 before:h-px before:bg-neutral-500"></div>
-               </div>
-               <div className="flex-1 min-w-0">
-                 <p className="text-sm text-white truncate font-medium">{job.prompt}</p>
-                 <div className="flex items-center gap-2 mt-1">
-                    <Zap className="w-3 h-3 text-neutral-500" />
-                    <Globe className="w-3 h-3 text-neutral-500" />
-                    <span className="text-[10px] text-neutral-600">Active Session</span>
-                 </div>
-               </div>
+        {/* User Instruction Bubble - Refactored for Documenting Feel */}
+        <div className="flex flex-col gap-2 relative z-10">
+           <div className="flex items-center gap-2 text-neutral-500 mb-2">
+             <div className="p-1.5 bg-neutral-900 rounded-lg">
+               <Zap className="w-4 h-4" />
              </div>
+             <span className="text-xs font-bold uppercase tracking-widest">Active Research Session</span>
            </div>
+           
+           <h1 className="text-2xl md:text-4xl font-bold text-white leading-tight">
+             {job.prompt}
+           </h1>
         </div>
 
-        {/* Action Pill */}
-        <div className="flex flex-col gap-4 relative z-10">
-          <div className="flex items-center gap-2">
-            <div className="flex items-center gap-1.5 px-3 py-1.5 bg-neutral-900 rounded-full border border-neutral-800 cursor-pointer hover:bg-neutral-800 transition-colors">
-              <div className="flex gap-1 items-center">
-                <ChevronDown className="w-3 h-3 text-neutral-500" />
-                <Brain className="w-3.5 h-3.5 text-neutral-500" />
-              </div>
-              <span className="text-xs text-neutral-500 font-medium">{job.steps.length} actions</span>
+        {/* Action Pill & Reasoning */}
+        <div className="flex flex-col gap-6 relative z-10">
+          <div className="flex items-center justify-between border-b border-neutral-900 pb-4">
+            <div className="flex items-center gap-1.5 px-3 py-1.5 bg-neutral-900 rounded-full border border-neutral-800">
+              <Brain className="w-3.5 h-3.5 text-primary" />
+              <span className="text-xs text-neutral-400 font-medium tracking-wide">
+                Agent Thinking...
+              </span>
+            </div>
+            <div className="flex items-center gap-2">
+              <Badge variant="outline" className="text-[10px] text-neutral-500">{job.steps.length} Actions</Badge>
+              <Badge variant="outline" className="text-[10px] text-green-500/80">Alive Document</Badge>
             </div>
           </div>
 
           {job.reasoning && (
             <motion.div 
-              initial={{ opacity: 0, y: 10 }}
-              animate={{ opacity: 1, y: 0 }}
-              className="bg-neutral-950 border border-neutral-900 rounded-xl p-4"
+              initial={{ opacity: 0, x: -10 }}
+              animate={{ opacity: 1, x: 0 }}
+              className="border-l-2 border-primary/30 pl-6 py-2"
             >
-              <div className="flex items-center gap-2 mb-2">
-                <Brain className="w-4 h-4 text-primary" />
-                <span className="text-xs font-bold uppercase tracking-wider text-neutral-500">Agent Reasoning</span>
-              </div>
-              <p className="text-sm text-neutral-300 leading-relaxed">
+              <p className="text-lg text-neutral-300 font-serif italic leading-relaxed">
                 {job.reasoning}
               </p>
             </motion.div>
           )}
         </div>
 
-        {/* Execution Log */}
-        <div className="space-y-6 relative z-10">
-           <div className="text-white leading-relaxed text-[15px] space-y-4">
-              <p className="italic text-neutral-400">
-                "{job.prompt}"
-              </p>
-           </div>
-
+        {/* Document Body / Execution Log */}
+        <div className="space-y-12 relative z-10 pt-4">
            <AnimatePresence>
              {job.steps.map((step, idx) => (
                <motion.div 
                  key={step.id}
-                 initial={{ opacity: 0, y: 10 }}
+                 initial={{ opacity: 0, y: 20 }}
                  animate={{ opacity: 1, y: 0 }}
-                 className="flex items-start gap-3"
+                 className="group"
                >
-                 <div className="mt-1 shrink-0">
-                   {step.status === 'completed' ? (
-                     <CheckCircle2 className="w-4 h-4 text-white" />
-                   ) : step.status === 'in_progress' ? (
-                     <Loader2 className="w-4 h-4 animate-spin text-neutral-500" />
-                   ) : (
-                     <Circle className="w-4 h-4 text-neutral-800" />
-                   )}
+                 <div className="flex items-start gap-4 mb-4">
+                   <div className="mt-1 shrink-0">
+                     {step.status === 'completed' ? (
+                       <div className="w-5 h-5 bg-white rounded-full flex items-center justify-center">
+                         <CheckCircle2 className="w-3.5 h-3.5 text-black" />
+                       </div>
+                     ) : step.status === 'in_progress' ? (
+                       <Loader2 className="w-5 h-5 animate-spin text-primary" />
+                     ) : (
+                       <div className="w-5 h-5 border-2 border-neutral-800 rounded-full" />
+                     )}
+                   </div>
+                   <div className="flex-1">
+                      <h3 className={cn(
+                        "text-lg font-semibold transition-colors",
+                        step.status === 'completed' ? "text-neutral-500" : "text-white"
+                      )}>{step.title}</h3>
+                      
+                      {step.output && (
+                        <motion.div 
+                          initial={{ opacity: 0 }}
+                          animate={{ opacity: 1 }}
+                          className="mt-4 p-5 bg-neutral-900/50 border border-neutral-800 rounded-2xl text-neutral-300 text-[15px] leading-relaxed font-sans shadow-inner"
+                        >
+                          <div className="prose prose-invert max-w-none">
+                            {step.output}
+                          </div>
+                        </motion.div>
+                      )}
+                   </div>
                  </div>
-                 <div className="flex-1">
-                    <p className={cn(
-                      "text-sm",
-                      step.status === 'completed' ? "text-neutral-500" : "text-white"
-                    )}>{step.title}</p>
-                 </div>
+                 {idx < job.steps.length - 1 && (
+                   <div className="ml-[10px] w-px h-12 bg-neutral-900 my-2" />
+                 )}
                </motion.div>
              ))}
            </AnimatePresence>

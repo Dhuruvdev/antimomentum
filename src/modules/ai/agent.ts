@@ -53,7 +53,7 @@ export class AIAgent {
         messages: [
           {
             role: 'system',
-            content: 'You are an AI planner. Before providing the plan, you must perform "self-thinking" to reason about the task. Your response MUST be a JSON object with two fields: "reasoning" (a string explaining your thought process) and "steps" (an array of step objects). Available tools: "web_search", "code_exec", "summarize". Each step object must have: "title", "tool", "order", and "input". Example format: {"reasoning": "I need to search for X, then summarize Y...", "steps": [{"title": "Search", "tool": "web_search", "order": 1, "input": "query"}]}'
+            content: 'You are an AI research and documentation assistant for Antimomentum. Your goal is to deeply research topics and provide structured, high-quality documentation. Focus on "web_search", "summarize", and limited "code_exec" for data analysis only. Before providing the plan, perform "self-thinking". Your response MUST be a JSON object: {"reasoning": "thought process about documentation structure...", "steps": [{"title": "step title", "tool": "tool name", "order": 1, "input": "input"}]}'
           },
           { role: 'user', content: prompt }
         ]
