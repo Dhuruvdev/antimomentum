@@ -52,9 +52,11 @@ export default function LandingPage() {
             <Button size="lg" className="hover-elevate active-elevate-2">
               Start Building
             </Button>
-            <Button size="lg" variant="outline" className="hover-elevate">
-              View Research
-            </Button>
+            <a href="/capabilities">
+              <Button size="lg" variant="outline" className="hover-elevate">
+                View Capabilities
+              </Button>
+            </a>
           </div>
         </div>
       </header>

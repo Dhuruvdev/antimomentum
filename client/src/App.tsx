@@ -9,12 +9,14 @@ import { BackgroundBeamsDemo } from "@/components/background-beams-demo";
 import JobProgress from "@/pages/job-progress";
 
 import LandingPage from "@/pages/landing";
+import CapabilitiesPage from "@/pages/capabilities";
 
 function Router() {
   return (
     <Switch>
       {/* Add pages below */}
       <Route path="/" component={LandingPage}/>
+      <Route path="/capabilities" component={CapabilitiesPage}/>
       <Route path="/~" component={V0ChatDemo}/>
       <Route path="/job/:id" component={JobProgress}/>
       {/* Fallback to 404 */}
