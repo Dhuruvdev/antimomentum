@@ -49,7 +49,7 @@ export class AIAgent {
   async getPlan(prompt: string, jobId: number) {
     try {
       const response = await axios.post('https://openrouter.ai/api/v1/chat/completions', {
-        model: 'google/gemini-2.0-flash-exp:free',
+        model: 'google/gemini-2.0-pro-exp-02-05',
         messages: [
           {
             role: 'system',
@@ -77,18 +77,17 @@ export class AIAgent {
       const objectMatch = contentStr.match(/\{[\s\S]*\}/);
       
       let content;
-      if (arrayMatch) {
-        content = JSON.parse(arrayMatch[0]);
-      } else if (objectMatch) {
-        content = JSON.parse(objectMatch[0]);
-      } else {
-        // Final attempt: search for any text that looks like a JSON array
-        const looseMatch = contentStr.match(/\[[\s\S]*\]/);
-        if (looseMatch) {
-          content = JSON.parse(looseMatch[0]);
+      try {
+        if (objectMatch) {
+          content = JSON.parse(objectMatch[0]);
+        } else if (arrayMatch) {
+          content = JSON.parse(arrayMatch[0]);
         } else {
           throw new Error('No JSON found in response');
         }
+      } catch (parseError) {
+        console.error('JSON Parse Error:', parseError, 'Content:', contentStr);
+        throw parseError;
       }
 
       const steps = content.steps || (Array.isArray(content) ? content : []);
