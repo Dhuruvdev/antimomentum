@@ -7,6 +7,12 @@ export const jobs = pgTable("jobs", {
   prompt: text("prompt").notNull(),
   status: text("status", { enum: ["pending", "planning", "executing", "completed", "failed"] }).notNull().default("pending"),
   reasoning: text("reasoning"),
+  type: text("type", { enum: ["research", "coding", "design", "calc"] }).notNull().default("research"),
+  metadata: jsonb("metadata").$type<{
+    documents?: string[];
+    clusterData?: any;
+    citations?: any[];
+  }>(),
   createdAt: timestamp("created_at").defaultNow(),
 });
 
