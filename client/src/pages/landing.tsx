@@ -59,30 +59,44 @@ export default function LandingPage() {
       </nav>
 
       {/* Hero Section */}
-      <header className="relative pt-32 pb-20 px-6 border-b overflow-hidden">
+      <header className="relative pt-32 pb-20 px-6 border-b overflow-hidden text-center">
         <div className="absolute inset-0 bg-gradient-to-br from-primary/5 via-transparent to-accent/5 -z-10" />
-        <div className="max-w-6xl mx-auto flex flex-col items-center text-center">
+        <div className="max-w-6xl mx-auto flex flex-col items-center">
           <Badge className="mb-6 py-1.5 px-4 text-xs font-bold uppercase tracking-wider" variant="secondary">
             <Sparkles className="w-3.5 h-3.5 mr-2 text-primary" />
-            Waitlist Now Open for Beta v1
+            Beta v1 Waitlist Now Active
           </Badge>
           <h1 className="text-5xl md:text-8xl font-bold tracking-tight mb-8 leading-[1.1]">
-            The Future of <br />
-            <span className="text-primary italic">Deep Intelligence</span>
+            Experience the <br />
+            <span className="text-primary italic">Intelligence Revolution</span>
           </h1>
           <p className="text-xl md:text-2xl text-muted-foreground max-w-3xl mb-12 font-medium">
-            Join the waitlist for Antimomentum. Deep research, structured documentation, and conceptual design—powered by autonomous reasoning.
+            The autonomous workspace for deep research, architectural documentation, and professional design. Join 5,000+ researchers in the Beta.
           </p>
-          <div className="flex flex-wrap justify-center gap-6">
-            <Button size="lg" className="h-14 px-10 rounded-full text-lg font-bold hover-elevate active-elevate-2">
-              Secure Early Access
-              <ArrowRight className="ml-2 w-5 h-5" />
+          
+          <div className="w-full max-w-md bg-card/50 backdrop-blur-sm border border-primary/10 p-2 rounded-2xl flex gap-2 mb-12 shadow-2xl">
+            <Input 
+              className="h-12 border-none bg-transparent focus-visible:ring-0 text-lg placeholder:text-muted-foreground/50" 
+              placeholder="Enter your email address" 
+            />
+            <Button className="h-12 px-8 rounded-xl font-bold hover-elevate active-elevate-2 whitespace-nowrap">
+              Join Waitlist
             </Button>
-            <Link href="/capabilities">
-              <Button size="lg" variant="outline" className="h-14 px-8 rounded-full text-lg font-bold hover-elevate">
-                Explore Capabilities
-              </Button>
-            </Link>
+          </div>
+
+          <div className="flex flex-wrap justify-center gap-8 opacity-50 grayscale hover:grayscale-0 transition-all duration-500">
+            <div className="flex items-center gap-2 font-bold text-sm">
+              <ShieldCheck className="w-5 h-5" />
+              SECURE
+            </div>
+            <div className="flex items-center gap-2 font-bold text-sm">
+              <Zap className="w-5 h-5" />
+              INSTANT
+            </div>
+            <div className="flex items-center gap-2 font-bold text-sm">
+              <Brain className="w-5 h-5" />
+              INTELLIGENT
+            </div>
           </div>
         </div>
       </header>
