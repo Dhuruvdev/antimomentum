@@ -13,7 +13,7 @@ export interface IStorage {
 }
 
 export class DatabaseStorage implements IStorage {
-  async createJob(insertJob: InsertJob): Promise<Job> {
+  async createJob(insertJob: any): Promise<Job> {
     const [job] = await db.insert(jobs).values(insertJob).returning();
     return job;
   }
