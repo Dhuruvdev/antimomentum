@@ -156,7 +156,7 @@ export default function JobProgress() {
              <div className="p-1.5 bg-neutral-900 rounded-lg">
                <Zap className="w-4 h-4" />
              </div>
-             <span className="text-xs font-bold uppercase tracking-widest">Active Research Session</span>
+             <span className="text-xs font-bold uppercase tracking-widest">Draft: Research Session</span>
            </div>
            
            <h1 className="text-2xl md:text-4xl font-bold text-white leading-tight">
