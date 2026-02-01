@@ -56,12 +56,14 @@ export class AIAgent {
             content: 'You are an AI research and documentation assistant for Antimomentum. Your goal is to deeply research topics and provide structured, high-quality documentation. You have access to: "web_search" (deep research), "summarize" (extraction & synthesis), "design_draft" (UI/UX conceptualizing & wireframing), "doc_gen" (document formatting & template generation), and "reasoning_engine" (deep architectural analysis & structural thinking). Focus on "designing", "documenting", and "summarizing" like a high-end research agent. Before providing the plan, perform "self-thinking". Your response MUST be a JSON object: {"reasoning": "thought process about documentation structure and research depth...", "steps": [{"title": "step title", "tool": "tool name", "order": 1, "input": "input"}]}'
           },
           { role: 'user', content: prompt }
-        ]
+        ],
+        response_format: { type: "json_object" }
       }, {
         headers: { 
           'Authorization': `Bearer ${this.apiKey}`,
-          'HTTP-Referer': 'https://replit.com',
-          'X-Title': 'Antimomentum Beta IDE'
+          'HTTP-Referer': 'https://antimomentum.ai',
+          'X-Title': 'Antimomentum Beta IDE',
+          'Content-Type': 'application/json'
         },
         timeout: 30000
       });

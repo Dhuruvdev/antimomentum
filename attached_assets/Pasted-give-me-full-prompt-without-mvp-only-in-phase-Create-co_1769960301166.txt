@@ -1,0 +1,89 @@
+give me full prompt without mvp only in phase
+
+Create complete Antimomentum v1 - AI Agent IDE matching Delv AI research capabilities + full universal workspace for reading/writing/research/compiling/calculating/designing/documents. Full production implementation across all phases simultaneously using Next.js 15, Tailwind, Monaco Editor, Socket.io collaboration, Docker execution, OpenRouter (llama-3.1-405b-instruct) for all AI agents.
+
+**Core Architecture:**
+- Chat sidebar: Natural language → Agent plans JSON workflow → generates/edits files across all modules
+- Monaco editor + file tree: Real-time multiplayer editing with conflict resolution
+- Multi-pane preview: Web apps (iframe), calculations (Jupyter), designs (SVG canvas), documents (rich preview)
+- Delv AI Research Module: PDF/TXT upload → PyMuPDF parsing → Pinecone vector DB → Llama3 RAG queries → scikit-learn clustering → Recharts topic visualizations → CSV export
+- Execution engine: Docker containers per workspace (50+ languages via Nixpacks) + streaming terminal
+- AI Agent Orchestration: LangGraph.js managing research/calc/design/formation agents with memory
+
+**Complete Feature Set:**
+```
+Research (Delv-level):
+• Multi-document upload (PDF/TXT/cloud drives) 
+• Semantic search across all docs simultaneously
+• ML clustering (topics/subtopics) with interactive pie/sunburst charts
+• Key information extraction for custom queries
+• Automatic summarization + citation tracking
+
+IDE Core:
+• Monaco Editor with 50+ language syntax highlighting
+• Docker sandbox execution for any language
+• Real-time multiplayer via Socket.io rooms
+• Built-in terminal with streaming output
+
+Calculation Engine:
+• Jupyter kernel integration (Python/R)
+• Math.js safe evaluation
+• AI-generated calculation workflows
+
+Design Module:
+• SVG/Canvas generation from text prompts
+• Live preview with zoom/pan
+• Export Figma/SVG/PNG
+
+Document Formation:
+• AI auto-generates docs/code/markdown from prompts
+• Rich text editing (ProseMirror)
+• Template system + version history
+
+Collaboration:
+• WebRTC video calling per workspace
+• @mentions + task assignment
+• Live cursors + selection sync
+```
+
+**Technical Stack:**
+```
+Frontend: Next.js 15 + TypeScript + Tailwind + Monaco + Xterm.js
+Backend: Fastify + Prisma + PostgreSQL + Redis (BullMQ queues)
+AI: OpenRouter API (all open models) + LangGraph.js agent orchestration
+Storage: S3-compatible + Pinecone vectors + pgvector
+Execution: Dockerode + Nixpacks for language detection
+Real-time: Socket.io + WebRTC
+Deployment: Docker Compose + Railway/Vercel ready
+```
+
+**API Endpoints Required:**
+```
+POST /api/workspaces - create isolated Docker workspace
+POST /api/execute/{lang} - run code in sandbox, stream output
+POST /api/research/query - RAG across all user docs
+POST /api/research/cluster - ML topic grouping + visualizations  
+POST /api/agent/prompt - master agent orchestrating all capabilities
+POST /api/docs/upload - parse + vectorize documents
+POST /api/calc/eval - safe calculations + AI math solver
+POST /api/design/generate - SVG/UI from text descriptions
+WS /ws/:workspaceId - real-time collaboration
+```
+
+**Files to Generate:**
+```
+├── src/
+│   ├── app/ (Next.js app router)
+│   ├── components/ (Monaco, Chat, ResearchPane, FileTree)
+│   ├── agents/ (LangGraph research/calc/design agents)
+│   ├── lib/ (Dockerode, OpenRouter client, Pinecone)
+│   └── prisma/schema.prisma
+├── docker-compose.yml (Postgres/Redis)
+├── Dockerfile
+├── .env.example (OPENROUTER_API_KEY, DATABASE_URL)
+├── package.json (all deps)
+└── README.md (full setup/deploy)
+```
+
+Generate complete production codebase with OpenAPI docs, error handling, rate limiting, authentication (JWT), responsive design, and beta-ready deployment configuration. Include full Delv AI research parity from day one.
+
