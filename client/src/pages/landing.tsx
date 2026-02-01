@@ -53,7 +53,7 @@ export default function LandingPage() {
           </div>
           <div className="flex items-center gap-4">
             <Button variant="ghost" className="hidden sm:inline-flex">Login</Button>
-            <Button className="hover-elevate active-elevate-2">Get Started</Button>
+            <Button className="hover-elevate active-elevate-2 px-6 rounded-full font-bold">Join Waitlist</Button>
           </div>
         </div>
       </nav>
@@ -64,19 +64,18 @@ export default function LandingPage() {
         <div className="max-w-6xl mx-auto flex flex-col items-center text-center">
           <Badge className="mb-6 py-1.5 px-4 text-xs font-bold uppercase tracking-wider" variant="secondary">
             <Sparkles className="w-3.5 h-3.5 mr-2 text-primary" />
-            The Future of Research & Documentation
+            Waitlist Now Open for Beta v1
           </Badge>
           <h1 className="text-5xl md:text-8xl font-bold tracking-tight mb-8 leading-[1.1]">
-            Your Autonomous <br />
-            <span className="text-primary italic">Research Partner</span>
+            The Future of <br />
+            <span className="text-primary italic">Deep Intelligence</span>
           </h1>
           <p className="text-xl md:text-2xl text-muted-foreground max-w-3xl mb-12 font-medium">
-            Deep research, structured documentation, and conceptual design. 
-            Antimomentum thinks, reasons, and executes your most complex information tasks.
+            Join the waitlist for Antimomentum. Deep research, structured documentation, and conceptual design—powered by autonomous reasoning.
           </p>
           <div className="flex flex-wrap justify-center gap-6">
-            <Button size="lg" className="h-14 px-8 rounded-full text-lg font-bold hover-elevate active-elevate-2">
-              Start Your Research
+            <Button size="lg" className="h-14 px-10 rounded-full text-lg font-bold hover-elevate active-elevate-2">
+              Secure Early Access
               <ArrowRight className="ml-2 w-5 h-5" />
             </Button>
             <Link href="/capabilities">
