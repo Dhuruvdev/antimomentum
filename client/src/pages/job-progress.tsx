@@ -187,68 +187,88 @@ export default function JobProgress() {
                 </p>
               </div>
 
-              {/* Live Page Preview Grid */}
-              <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-2 gap-4 md:gap-8 pt-4 md:pt-8">
-                {job.steps.map((step: Step, idx: number) => (
+              {/* Live PDF View - Single Generation Mode */}
+              <div className="pt-8">
+                <div className="flex items-center gap-2 mb-6">
+                  <div className="px-3 py-1 rounded-full bg-primary/10 border border-primary/20 flex items-center gap-2">
+                    <div className="w-2 h-2 rounded-full bg-primary animate-pulse" />
+                    <span className="text-[10px] font-bold uppercase tracking-widest text-primary">Live PDF Generation</span>
+                  </div>
+                </div>
+
+                <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-2 gap-6 md:gap-10">
+                  {job.steps.map((step: Step, idx: number) => (
+                    <motion.div
+                      key={step.id}
+                      initial={{ opacity: 0, y: 20 }}
+                      animate={{ opacity: 1, y: 0 }}
+                      transition={{ delay: idx * 0.1 }}
+                      className="group relative"
+                    >
+                      <div className="relative aspect-[3/4] rounded-[1.5rem] md:rounded-[2rem] bg-white/[0.01] border border-white/[0.05] shadow-[0_30px_60px_-15px_rgba(0,0,0,0.5)] overflow-hidden group-hover:border-primary/20 transition-all duration-500 group-hover:shadow-primary/5 hover:scale-[1.01]">
+                        {/* Paper Texture Overlay */}
+                        <div className="absolute inset-0 opacity-[0.03] pointer-events-none bg-[url('https://www.transparenttextures.com/patterns/paper-fibers.png')]" />
+                        
+                        <div className="absolute inset-0 p-5 md:p-8 flex flex-col">
+                          {step.output ? (
+                            <>
+                              <div className="prose prose-neutral prose-invert prose-xs md:prose-sm max-w-none overflow-hidden line-clamp-[14] md:line-clamp-[16] text-neutral-300 font-serif leading-relaxed">
+                                {step.output}
+                              </div>
+                              <div className="mt-auto pt-4 md:pt-6 flex items-center justify-between border-t border-white/[0.05]">
+                                <div className="flex items-center gap-2">
+                                  <Badge variant="outline" className="text-[8px] md:text-[9px] uppercase border-white/[0.1] bg-white/[0.03]">Page {idx + 1}</Badge>
+                                </div>
+                                <span className="text-[9px] md:text-[10px] font-mono text-neutral-600 uppercase tracking-tighter">Draft Alpha</span>
+                              </div>
+                            </>
+                          ) : (
+                            <div className="flex-1 flex flex-col items-center justify-center gap-3 md:gap-4 opacity-20">
+                              <Loader2 className="w-6 h-6 md:w-8 h-8 animate-spin" />
+                              <span className="text-[10px] md:text-xs font-medium uppercase tracking-[0.2em]">Synthesizing...</span>
+                            </div>
+                          )}
+                        </div>
+
+                        {/* Hover Actions */}
+                        <div className="absolute inset-x-0 bottom-0 p-4 bg-gradient-to-t from-black/80 to-transparent md:inset-0 md:bg-black/60 md:opacity-0 group-hover:opacity-100 transition-opacity flex items-center justify-center gap-3 backdrop-blur-sm">
+                          <button 
+                            onClick={() => exportToPdf(step.title, step.output!)}
+                            className="flex items-center gap-2 px-4 py-2 bg-primary text-black rounded-full text-[10px] font-bold uppercase tracking-wider"
+                          >
+                            <Download className="w-3 h-3" />
+                            Download
+                          </button>
+                        </div>
+                      </div>
+                    </motion.div>
+                  ))}
+                </div>
+
+                {/* Completion Explanation - Shows only when finished */}
+                {job.status === 'completed' && (
                   <motion.div
-                    key={step.id}
                     initial={{ opacity: 0, y: 20 }}
                     animate={{ opacity: 1, y: 0 }}
-                    transition={{ delay: idx * 0.1 }}
-                    className="group relative flex flex-col"
+                    className="mt-16 p-8 rounded-[2rem] bg-white/[0.02] border border-white/[0.05] backdrop-blur-sm space-y-4"
                   >
-                    <div className="flex items-center gap-2 mb-3">
-                      <div className="w-6 h-6 rounded-md bg-white/[0.05] border border-white/[0.08] flex items-center justify-center text-[10px] font-bold text-neutral-500 group-hover:text-primary transition-colors">
-                        {idx + 1}
-                      </div>
-                      <span className="text-xs font-bold uppercase tracking-wider text-neutral-500 group-hover:text-neutral-300 transition-colors">
-                        {step.title}
-                      </span>
+                    <div className="flex items-center gap-2">
+                      <Sparkles className="w-5 h-5 text-primary" />
+                      <h3 className="text-lg font-bold text-neutral-200">Synthesis Complete</h3>
                     </div>
-
-                    <div className="relative aspect-[3/4] rounded-[1.5rem] md:rounded-[2rem] bg-white/[0.01] border border-white/[0.05] shadow-2xl overflow-hidden group-hover:border-primary/20 transition-all duration-500 group-hover:shadow-primary/5">
-                      {/* Paper Texture Overlay */}
-                      <div className="absolute inset-0 opacity-[0.03] pointer-events-none bg-[url('https://www.transparenttextures.com/patterns/paper-fibers.png')]" />
-                      
-                      <div className="absolute inset-0 p-4 md:p-8 flex flex-col">
-                        {step.output ? (
-                          <>
-                            <div className="prose prose-neutral prose-invert prose-xs md:prose-sm max-w-none overflow-hidden line-clamp-[12] md:line-clamp-[15] text-neutral-300 font-serif leading-relaxed">
-                              {step.output}
-                            </div>
-                            <div className="mt-auto pt-4 md:pt-6 flex items-center justify-between border-t border-white/[0.05]">
-                              <div className="flex items-center gap-2">
-                                <Badge variant="outline" className="text-[8px] md:text-[9px] uppercase border-white/[0.1] bg-white/[0.03]">Document Page</Badge>
-                                {step.tool === 'visual_synthesis' && <ImageIcon className="w-3 h-3 text-primary" />}
-                                {step.tool === 'web_research' && <Globe className="w-3 h-3 text-blue-400" />}
-                              </div>
-                              <span className="text-[9px] md:text-[10px] font-mono text-neutral-600">p.{idx + 1}</span>
-                            </div>
-                          </>
-                        ) : (
-                          <div className="flex-1 flex flex-col items-center justify-center gap-3 md:gap-4 opacity-20">
-                            <Loader2 className="w-6 h-6 md:w-8 h-8 animate-spin" />
-                            <span className="text-[10px] md:text-xs font-medium uppercase tracking-[0.2em]">Synthesizing...</span>
-                          </div>
-                        )}
-                      </div>
-
-                      {/* Actions - Always visible on mobile, hover on desktop */}
-                      <div className="absolute inset-x-0 bottom-0 p-4 bg-gradient-to-t from-black/80 to-transparent md:inset-0 md:bg-black/60 md:opacity-0 group-hover:opacity-100 transition-opacity flex items-center justify-center gap-3 backdrop-blur-sm">
-                        <button 
-                          onClick={() => exportToPdf(step.title, step.output!)}
-                          className="flex items-center gap-2 px-4 py-2 md:px-5 md:py-2.5 bg-primary text-black rounded-full text-[10px] md:text-xs font-bold uppercase tracking-wider shadow-lg transform md:translate-y-4 md:group-hover:translate-y-0 transition-all"
-                        >
-                          <Download className="w-3 h-3 md:w-4 h-4" />
-                          Download
-                        </button>
-                        <button className="p-2 md:p-2.5 bg-white/10 hover:bg-white/20 rounded-full text-white backdrop-blur-md transform md:translate-y-4 md:group-hover:translate-y-0 transition-all delay-75">
-                          <Plus className="w-3 h-3 md:w-4 h-4" />
-                        </button>
-                      </div>
+                    <p className="text-neutral-400 leading-relaxed">
+                      I have completed the multi-page intelligence synthesis. The report has been structured across multiple document pages to maintain professional hierarchy and visual clarity. You can now download individual pages or export the entire draft.
+                    </p>
+                    <div className="flex gap-4 pt-2">
+                      <button 
+                        onClick={() => exportToPdf(job.prompt, job.steps.map(s => s.output).join('\n\n'))}
+                        className="px-6 py-2.5 bg-white/[0.05] hover:bg-white/10 border border-white/10 rounded-full text-xs font-bold uppercase tracking-widest transition-all"
+                      >
+                        Export Full Report
+                      </button>
                     </div>
                   </motion.div>
-                ))}
+                )}
               </div>
             </div>
           </div>
