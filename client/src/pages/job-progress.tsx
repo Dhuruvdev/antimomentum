@@ -1,60 +1,27 @@
 import { useQuery, useMutation } from "@tanstack/react-query";
-import { useParams, useLocation } from "wouter";
+import { useParams, useLocation, Link } from "wouter";
 import { api, buildUrl } from "@shared/routes";
 import { queryClient } from "@/lib/queryClient";
 import { BackgroundBeams } from "@/components/ui/background-beams";
 import { 
-  Loader2, 
-  CheckCircle2, 
-  Circle, 
-  MoreVertical,
-  History,
-  LogOut,
-  Plus,
-  Paperclip,
-  Zap,
-  Globe,
-  MessageSquarePlus,
-  ChevronDown,
-  Brain,
-  ArrowUpIcon,
-  Download,
-  FileText,
-  FileCode
+  Loader2, CheckCircle2, Globe, Brain, ArrowUpIcon, 
+  Download, MoreVertical, Plus, FileCode, FileText,
+  Search, LayoutDashboard, FileStack, BookOpen, 
+  History, Settings, Upload, Zap, Sparkles,
+  ChevronRight, PanelRightClose, FileJson, Image as ImageIcon
 } from "lucide-react";
 import { exportToPdf, exportToDocx } from "@/lib/export-utils";
 import { motion, AnimatePresence } from "framer-motion";
 import { cn } from "@/lib/utils";
-import { SiReplit } from "react-icons/si";
 import { Badge } from "@/components/ui/badge";
-import type { JobResponse } from "@shared/schema";
-import { useState, useRef, useEffect, useCallback, memo, useMemo } from "react";
+import { useState, useRef, useEffect, useCallback, memo } from "react";
 import { Textarea } from "@/components/ui/textarea";
+import type { JobResponse, Step } from "@shared/schema";
 
 const TypingAnimation = memo(({ text }: { text: string }) => {
-  const [displayedText, setDisplayedText] = useState("");
-  const [currentIndex, setCurrentIndex] = useState(0);
-
-  useEffect(() => {
-    if (currentIndex < text.length) {
-      const timeout = setTimeout(() => {
-        setDisplayedText(prev => prev + text[currentIndex]);
-        setCurrentIndex(prev => prev + 1);
-      }, 10);
-      return () => clearTimeout(timeout);
-    }
-  }, [currentIndex, text]);
-
   return (
     <div className="prose prose-invert max-w-none">
-      {displayedText}
-      {currentIndex < text.length && (
-        <motion.span
-          animate={{ opacity: [0, 1, 0] }}
-          transition={{ repeat: Infinity, duration: 0.8 }}
-          className="inline-block w-1.5 h-4 bg-primary ml-1 align-middle"
-        />
-      )}
+      {text}
     </div>
   );
 });
@@ -64,9 +31,11 @@ export default function JobProgress() {
   const [, setLocation] = useLocation();
   const [inputValue, setInputValue] = useState("");
   const textareaRef = useRef<HTMLTextAreaElement>(null);
+  const [isSidebarOpen, setIsSidebarOpen] = useState(true);
 
   const { data: job, isLoading } = useQuery<JobResponse>({
     queryKey: [buildUrl(api.jobs.get.path, { id: id! })],
+    enabled: !!id,
     refetchInterval: (query) => {
       const job = query.state.data as JobResponse | undefined;
       return job?.status === "completed" || job?.status === "failed" ? false : 1000;
@@ -75,10 +44,7 @@ export default function JobProgress() {
 
   const mutation = useMutation({
     mutationFn: async (instruction: string) => {
-      // For a real app, this would be a PATCH to update the job with new context
-      // For now, we simulate by sending the instruction to the same job session
-      console.log(`Sending instruction to job ${id}:`, instruction);
-      // In a real implementation, we'd add this to a messages/chat history table
+      // Simulation or instruction logic
       return { success: true };
     },
     onSuccess: () => {
@@ -99,17 +65,6 @@ export default function JobProgress() {
     }
   };
 
-  const adjustHeight = useCallback(() => {
-    const textarea = textareaRef.current;
-    if (!textarea) return;
-    textarea.style.height = "auto";
-    textarea.style.height = `${Math.min(textarea.scrollHeight, 200)}px`;
-  }, []);
-
-  useEffect(() => {
-    adjustHeight();
-  }, [inputValue, adjustHeight]);
-
   if (isLoading || !job) {
     return (
       <div className="h-screen w-full flex items-center justify-center bg-black">
@@ -119,175 +74,288 @@ export default function JobProgress() {
   }
 
   return (
-    <div className="flex flex-col h-screen w-full bg-[#050505] text-white font-sans overflow-hidden selection:bg-primary/30">
-      {/* Top Navigation Bar - Mobile Optimized */}
-      <header className="flex items-center justify-between px-4 h-16 border-b border-white/[0.03] bg-black/40 backdrop-blur-xl shrink-0 z-[100]">
-        <div className="flex items-center gap-1.5">
-          <button className="p-2 hover:bg-white/5 active:scale-95 rounded-full transition-all">
-            <ArrowUpIcon className="w-5 h-5 text-neutral-400 rotate-[270deg]" />
-          </button>
-          <div className="flex flex-col">
-            <span className="text-[10px] font-bold uppercase tracking-widest text-primary/80 leading-none mb-1">Draft</span>
-            <span className="text-sm font-semibold text-neutral-200 truncate max-w-[120px]">
-              {job.prompt.substring(0, 20)}...
-            </span>
+    <div className="flex h-screen w-full bg-[#050505] text-white font-sans overflow-hidden selection:bg-primary/30">
+      {/* Lucid Sidebar - Desktop/Mobile Responsive */}
+      <aside className={cn(
+        "flex flex-col border-r border-white/[0.03] bg-black/40 backdrop-blur-xl transition-all duration-300 z-[100]",
+        isSidebarOpen ? "w-64" : "w-0 overflow-hidden"
+      )}>
+        <div className="p-6 flex items-center gap-3">
+          <div className="w-8 h-8 rounded-lg bg-primary/20 flex items-center justify-center border border-primary/30">
+            <Zap className="w-5 h-5 text-primary shadow-[0_0_10px_rgba(var(--primary),0.5)]" />
           </div>
-        </div>
-        
-        <div className="absolute left-1/2 -translate-x-1/2 flex items-center gap-2">
-          <div className="w-2 h-2 rounded-full bg-primary animate-pulse shadow-[0_0_8px_rgba(var(--primary),0.5)]" />
-          <Brain className="w-4 h-4 text-white opacity-80" />
+          <span className="font-bold tracking-tight text-lg text-neutral-100">Antimomentum</span>
         </div>
 
-        <div className="flex items-center gap-1">
-          <button className="p-2 hover:bg-white/5 active:scale-95 rounded-full transition-all text-neutral-400">
-            <Download className="w-5 h-5" />
+        <nav className="flex-1 px-4 space-y-8 overflow-y-auto py-4">
+          <div className="space-y-1">
+            <p className="px-2 text-[10px] font-bold uppercase tracking-widest text-neutral-500 mb-2">Workspaces</p>
+            {[
+              { icon: LayoutDashboard, label: "Dashboard", active: true },
+              { icon: Search, label: "Research Projects" },
+              { icon: FileStack, label: "Reports" },
+              { icon: BookOpen, label: "Publications" },
+            ].map((item) => (
+              <button key={item.label} className={cn(
+                "w-full flex items-center gap-3 px-3 py-2 rounded-lg text-sm transition-all",
+                item.active ? "bg-primary/10 text-primary border border-primary/20" : "text-neutral-400 hover:bg-white/5"
+              )}>
+                <item.icon className="w-4 h-4" />
+                {item.label}
+              </button>
+            ))}
+          </div>
+
+          <div className="space-y-1">
+            <p className="px-2 text-[10px] font-bold uppercase tracking-widest text-neutral-500 mb-2">Projects</p>
+            {["Market Strategy", "Quarterly Analysis", "Meeting Docs"].map((label) => (
+              <button key={label} className="w-full flex items-center gap-3 px-3 py-2 rounded-lg text-sm text-neutral-400 hover:bg-white/5 transition-all">
+                <ChevronRight className="w-3 h-3" />
+                {label}
+              </button>
+            ))}
+          </div>
+        </nav>
+
+        <div className="p-4 border-t border-white/[0.03] space-y-2">
+          <button className="w-full flex items-center gap-3 px-3 py-2 rounded-lg text-sm text-neutral-400 hover:bg-white/5 transition-all">
+            <Settings className="w-4 h-4" />
+            Settings
           </button>
-          <button className="p-2 hover:bg-white/5 active:scale-95 rounded-full transition-all text-neutral-400">
-            <MoreVertical className="w-5 h-5" />
+          <button className="w-full flex items-center gap-3 px-3 py-2 rounded-lg text-sm text-neutral-400 hover:bg-white/5 transition-all">
+            <History className="w-4 h-4" />
+            History
           </button>
         </div>
-      </header>
+      </aside>
 
-      {/* Main Content Area - Delv AI Style */}
-      <main className="flex-1 overflow-y-auto px-4 py-8 space-y-10 custom-scrollbar pb-40 max-w-2xl mx-auto w-full scroll-smooth">
-        <BackgroundBeams className="opacity-[0.03] pointer-events-none" />
-        
-        {/* Title Section */}
-        <header className="space-y-4 relative z-10">
-          <div className="inline-flex items-center gap-2 px-2.5 py-1 rounded-full bg-white/[0.03] border border-white/[0.05]">
-            <Globe className="w-3.5 h-3.5 text-primary" />
-            <span className="text-[10px] font-bold uppercase tracking-[0.2em] text-neutral-400">Research Intelligence</span>
-          </div>
-          <h1 className="text-3xl md:text-5xl font-bold tracking-tight text-neutral-100 leading-[1.15]">
-            {job.prompt}
-          </h1>
-          
-          {job.reasoning && (
-            <motion.div 
-              initial={{ opacity: 0, y: 10 }}
-              animate={{ opacity: 1, y: 0 }}
-              className="pt-4 border-t border-white/[0.03]"
+      <div className="flex-1 flex flex-col relative">
+        {/* Main Content Header */}
+        <header className="flex items-center justify-between px-6 h-16 border-b border-white/[0.03] bg-black/20 backdrop-blur-xl shrink-0 z-50">
+          <div className="flex items-center gap-4">
+            <button 
+              onClick={() => setIsSidebarOpen(!isSidebarOpen)}
+              className="p-2 hover:bg-white/5 rounded-lg transition-all text-neutral-400"
             >
-              <p className="text-base md:text-lg text-neutral-400 font-medium leading-relaxed italic opacity-80">
-                "{job.reasoning}"
-              </p>
-            </motion.div>
-          )}
+              <PanelRightClose className={cn("w-5 h-5", !isSidebarOpen && "rotate-180")} />
+            </button>
+            <div className="flex items-center gap-3">
+              <Search className="w-4 h-4 text-neutral-500" />
+              <div className="h-4 w-px bg-white/[0.05]" />
+              <span className="text-sm font-medium text-neutral-300 truncate max-w-[200px]">
+                {job.prompt}
+              </span>
+            </div>
+          </div>
+
+          <div className="flex items-center gap-3">
+            <div className="hidden md:flex items-center gap-2 px-3 py-1.5 rounded-full bg-white/[0.03] border border-white/[0.05]">
+              <Sparkles className="w-3.5 h-3.5 text-primary animate-pulse" />
+              <span className="text-xs font-medium text-neutral-400">Agent Status: Active</span>
+            </div>
+            <button className="p-2 hover:bg-white/5 rounded-full transition-all text-neutral-400">
+              <Download className="w-5 h-5" />
+            </button>
+            <button className="p-2 hover:bg-white/5 rounded-full transition-all text-neutral-400">
+              <MoreVertical className="w-5 h-5" />
+            </button>
+          </div>
         </header>
 
-        {/* Content Cards - The "Alive Document" Feed */}
-        <div className="space-y-12 relative z-10">
-           <AnimatePresence mode="popLayout">
-             {job.steps.map((step, idx) => (
-               <motion.section 
-                 key={step.id}
-                 initial={{ opacity: 0, scale: 0.98, y: 20 }}
-                 animate={{ opacity: 1, scale: 1, y: 0 }}
-                 transition={{ duration: 0.5, ease: [0.23, 1, 0.32, 1] }}
-                 className="group relative"
-               >
-                 {/* Step Header */}
-                 <div className="flex items-center gap-3 mb-5">
-                   <div className={cn(
-                     "w-8 h-8 rounded-xl flex items-center justify-center border transition-all duration-500",
-                     step.status === 'completed' 
-                       ? "bg-primary/10 border-primary/20 text-primary" 
-                       : "bg-white/[0.03] border-white/[0.05] text-neutral-500"
-                   )}>
-                     {step.status === 'completed' ? (
-                       <CheckCircle2 className="w-4 h-4" />
-                     ) : step.status === 'in_progress' ? (
-                       <Loader2 className="w-4 h-4 animate-spin" />
-                     ) : (
-                       <span className="text-xs font-bold">{idx + 1}</span>
-                     )}
-                   </div>
-                   <h3 className={cn(
-                     "text-sm font-bold tracking-wide uppercase opacity-90",
-                     step.status === 'completed' ? "text-primary" : "text-neutral-400"
-                   )}>
-                     {step.title}
-                   </h3>
-                 </div>
+        {/* Central Workspace Area */}
+        <main className="flex-1 flex overflow-hidden">
+          {/* Middle Workspace: Objective & Documents */}
+          <div className="flex-1 overflow-y-auto px-6 py-10 space-y-12 custom-scrollbar pb-40 max-w-4xl mx-auto w-full relative">
+            <BackgroundBeams className="opacity-[0.02] pointer-events-none" />
+            
+            <div className="space-y-6 relative z-10">
+              <div className="space-y-2">
+                <h2 className="text-2xl font-bold tracking-tight text-neutral-100 flex items-center gap-2">
+                  <Globe className="w-5 h-5 text-primary" />
+                  Objective Analysis
+                </h2>
+                <p className="text-neutral-400 leading-relaxed text-lg">
+                  {job.prompt}
+                </p>
+              </div>
 
-                 {/* Step Content Card */}
-                 <div className="relative">
-                   <div className="absolute -left-4 top-0 bottom-0 w-[1px] bg-gradient-to-b from-primary/20 via-transparent to-transparent opacity-0 group-hover:opacity-100 transition-opacity" />
-                   
-                   {step.output ? (
-                     <div className="relative group/content overflow-hidden rounded-[2rem] bg-white/[0.02] border border-white/[0.05] p-6 md:p-8 backdrop-blur-sm shadow-2xl transition-all duration-500 hover:bg-white/[0.04] hover:border-white/[0.1]">
-                       <div className="absolute top-0 right-0 w-32 h-32 bg-primary/5 blur-[50px] -z-10 opacity-0 group-hover/content:opacity-100 transition-opacity" />
-                       
-                       <div className="prose prose-neutral prose-invert max-w-none">
-                         <TypingAnimation text={step.output} />
-                       </div>
+              {/* Live Page Preview Grid */}
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-8 pt-8">
+                {job.steps.map((step: Step, idx: number) => (
+                  <motion.div
+                    key={step.id}
+                    initial={{ opacity: 0, y: 20 }}
+                    animate={{ opacity: 1, y: 0 }}
+                    transition={{ delay: idx * 0.1 }}
+                    className="group relative flex flex-col"
+                  >
+                    <div className="flex items-center gap-2 mb-3">
+                      <div className="w-6 h-6 rounded-md bg-white/[0.05] border border-white/[0.08] flex items-center justify-center text-[10px] font-bold text-neutral-500 group-hover:text-primary transition-colors">
+                        {idx + 1}
+                      </div>
+                      <span className="text-xs font-bold uppercase tracking-wider text-neutral-500 group-hover:text-neutral-300 transition-colors">
+                        {step.title}
+                      </span>
+                    </div>
 
-                       {/* Action Overlay */}
-                       <div className="flex items-center gap-2 mt-8 pt-6 border-t border-white/[0.03]">
-                         <button 
-                           onClick={() => exportToPdf(step.title, step.output!)}
-                           className="flex items-center gap-2 px-4 py-2 bg-white/[0.05] hover:bg-white/[0.1] rounded-full text-[10px] font-bold uppercase tracking-wider transition-all"
-                         >
-                           <FileCode className="w-3 h-3" />
-                           Export PDF
-                         </button>
-                         <button 
-                           onClick={() => exportToDocx(step.title, step.output!)}
-                           className="flex items-center gap-2 px-4 py-2 bg-white/[0.05] hover:bg-white/[0.1] rounded-full text-[10px] font-bold uppercase tracking-wider transition-all"
-                         >
-                           <FileText className="w-3 h-3" />
-                           Word Draft
-                         </button>
-                       </div>
-                     </div>
-                   ) : (
-                     <div className="h-24 flex items-center justify-center rounded-[2rem] border border-dashed border-white/[0.05] opacity-20">
-                       <Loader2 className="w-6 h-6 animate-spin" />
-                     </div>
-                   )}
-                 </div>
-               </motion.section>
-             ))}
-           </AnimatePresence>
-        </div>
-      </main>
+                    {/* The "Live Page" Preview */}
+                    <div className="relative aspect-[3/4] rounded-[2rem] bg-white/[0.01] border border-white/[0.05] shadow-2xl overflow-hidden group-hover:border-primary/20 transition-all duration-500 group-hover:shadow-primary/5">
+                      {/* Paper Texture Overlay */}
+                      <div className="absolute inset-0 opacity-[0.03] pointer-events-none bg-[url('https://www.transparenttextures.com/patterns/paper-fibers.png')]" />
+                      
+                      <div className="absolute inset-0 p-8 flex flex-col">
+                        {step.output ? (
+                          <>
+                            <div className="prose prose-neutral prose-invert prose-sm max-w-none overflow-hidden line-clamp-[15] text-neutral-300 font-serif leading-relaxed">
+                              {step.output}
+                            </div>
+                            <div className="mt-auto pt-6 flex items-center justify-between border-t border-white/[0.05]">
+                              <div className="flex items-center gap-2">
+                                <Badge variant="outline" className="text-[9px] uppercase border-white/[0.1] bg-white/[0.03]">Document Page</Badge>
+                                {step.tool === 'visual_synthesis' && <ImageIcon className="w-3 h-3 text-primary" />}
+                                {step.tool === 'web_research' && <Globe className="w-3 h-3 text-blue-400" />}
+                              </div>
+                              <span className="text-[10px] font-mono text-neutral-600">p.{idx + 1}</span>
+                            </div>
+                          </>
+                        ) : (
+                          <div className="flex-1 flex flex-col items-center justify-center gap-4 opacity-20">
+                            <Loader2 className="w-8 h-8 animate-spin" />
+                            <span className="text-xs font-medium uppercase tracking-[0.2em]">Synthesizing...</span>
+                          </div>
+                        )}
+                      </div>
 
-      {/* Mobile Input Bar - Delv AI Style */}
-      <div className="fixed bottom-6 left-1/2 -translate-x-1/2 w-[calc(100%-2rem)] max-w-lg z-50">
-        <div className="bg-neutral-900/80 backdrop-blur-2xl rounded-[2.5rem] border border-white/[0.08] shadow-[0_20px_50px_rgba(0,0,0,0.5)] p-2 flex items-center gap-2">
-          <button className="p-3 bg-white/[0.03] hover:bg-white/10 rounded-full transition-all text-neutral-400">
-            <Plus className="w-5 h-5" />
-          </button>
-          
-          <div className="flex-1 px-2">
-            <Textarea
-              ref={textareaRef}
-              value={inputValue}
-              onChange={(e) => setInputValue(e.target.value)}
-              onKeyDown={handleKeyDown}
-              placeholder="Evolve the research..."
-              className="w-full bg-transparent border-none text-sm focus-visible:ring-0 placeholder:text-neutral-600 resize-none py-3 h-11"
-              style={{ overflow: "hidden" }}
-            />
+                      {/* Hover Actions */}
+                      <div className="absolute inset-0 bg-black/60 opacity-0 group-hover:opacity-100 transition-opacity flex items-center justify-center gap-3 backdrop-blur-sm">
+                        <button 
+                          onClick={() => exportToPdf(step.title, step.output!)}
+                          className="flex items-center gap-2 px-5 py-2.5 bg-primary text-black rounded-full text-xs font-bold uppercase tracking-wider shadow-lg transform translate-y-4 group-hover:translate-y-0 transition-all"
+                        >
+                          <Download className="w-4 h-4" />
+                          Download Page
+                        </button>
+                        <button className="p-2.5 bg-white/10 hover:bg-white/20 rounded-full text-white backdrop-blur-md transform translate-y-4 group-hover:translate-y-0 transition-all delay-75">
+                          <Plus className="w-4 h-4" />
+                        </button>
+                      </div>
+                    </div>
+                  </motion.div>
+                ))}
+              </div>
+            </div>
           </div>
 
-          <button
-            onClick={handleSubmit}
-            disabled={!inputValue.trim() || mutation.isPending}
-            className={cn(
-              "w-11 h-11 rounded-full flex items-center justify-center transition-all duration-300",
-              inputValue.trim() 
-                ? "bg-primary text-black shadow-[0_0_20px_rgba(var(--primary),0.3)]" 
-                : "bg-white/[0.03] text-neutral-600"
-            )}
-          >
-            {mutation.isPending ? (
-              <Loader2 className="w-5 h-5 animate-spin" />
-            ) : (
-              <ArrowUpIcon className="w-5 h-5" />
-            )}
-          </button>
+          {/* Right Sidebar: Plan Before Execution */}
+          <aside className="hidden lg:flex flex-col w-80 border-l border-white/[0.03] bg-black/20 backdrop-blur-xl p-6 space-y-8 overflow-y-auto z-50">
+            <div className="space-y-6">
+              <div className="flex items-center justify-between">
+                <div className="flex items-center gap-2">
+                  <div className="w-2 h-2 rounded-full bg-primary animate-pulse" />
+                  <h3 className="text-sm font-bold uppercase tracking-widest text-neutral-400">Working Workflow</h3>
+                </div>
+                <button className="p-1 hover:bg-white/5 rounded-md">
+                  <PanelRightClose className="w-4 h-4 text-neutral-500" />
+                </button>
+              </div>
+
+              <div className="p-4 rounded-xl bg-primary/5 border border-primary/10 space-y-3">
+                <p className="text-sm font-medium text-neutral-300 leading-relaxed">
+                  I am analyzing the objective and synthesizing a professional intelligence report across multiple pages.
+                </p>
+                <div className="flex items-center gap-2">
+                  <div className="flex -space-x-2">
+                    {[FileCode, FileText, FileJson, ImageIcon].map((Icon, i) => (
+                      <div key={i} className="w-6 h-6 rounded-full bg-neutral-900 border border-white/10 flex items-center justify-center">
+                        <Icon className="w-3 h-3 text-neutral-400" />
+                      </div>
+                    ))}
+                  </div>
+                  <span className="text-[10px] font-medium text-neutral-500">+ All Artifacts</span>
+                </div>
+              </div>
+
+              <div className="space-y-4">
+                <p className="text-[10px] font-bold uppercase tracking-widest text-neutral-500">Execution Plan</p>
+                <div className="space-y-4">
+                  {job.steps.map((step: Step, i: number) => (
+                    <div key={step.id} className="flex gap-4 group">
+                      <div className="flex flex-col items-center gap-1">
+                        <div className={cn(
+                          "w-5 h-5 rounded-full border flex items-center justify-center text-[10px] font-bold transition-all",
+                          step.status === 'completed' ? "bg-primary border-primary text-black" : "border-white/10 text-neutral-500"
+                        )}>
+                          {step.status === 'completed' ? <CheckCircle2 className="w-3 h-3" /> : i + 1}
+                        </div>
+                        {i < job.steps.length - 1 && <div className="w-px h-full bg-white/[0.05]" />}
+                      </div>
+                      <div className="pb-4">
+                        <p className={cn(
+                          "text-sm font-medium transition-colors",
+                          step.status === 'completed' ? "text-neutral-300" : "text-neutral-500"
+                        )}>{step.title}</p>
+                        <p className="text-[10px] text-neutral-600 mt-1 uppercase tracking-tight">{step.tool}</p>
+                      </div>
+                    </div>
+                  ))}
+                </div>
+              </div>
+            </div>
+
+            <div className="mt-auto space-y-4 pt-8">
+              <div className="p-4 rounded-xl bg-white/[0.02] border border-white/[0.05] space-y-3">
+                <p className="text-[10px] font-bold uppercase tracking-widest text-neutral-500">Suggested Tools</p>
+                <div className="flex flex-wrap gap-2">
+                  {["Mindmap Gen", "Visual Synthesis", "Data Weaver", "Report Master"].map(tool => (
+                    <Badge key={tool} variant="outline" className="text-[9px] bg-white/[0.03] border-white/[0.05] text-neutral-400">
+                      {tool}
+                    </Badge>
+                  ))}
+                </div>
+              </div>
+              <button className="w-full py-3 bg-primary text-black rounded-xl text-sm font-bold uppercase tracking-widest shadow-[0_0_20px_rgba(var(--primary),0.2)] hover:scale-[1.02] active:scale-[0.98] transition-all">
+                Execute & Start
+              </button>
+            </div>
+          </aside>
+        </main>
+
+        {/* Floating Input Bar - Mobile Optimized */}
+        <div className="fixed bottom-8 left-1/2 -translate-x-1/2 w-[calc(100%-3rem)] max-w-2xl z-50">
+          <div className="bg-[#111111]/80 backdrop-blur-3xl rounded-[2.5rem] border border-white/[0.08] shadow-[0_30px_60px_rgba(0,0,0,0.8)] p-3 flex items-center gap-3">
+            <button className="w-12 h-12 flex items-center justify-center bg-white/[0.03] hover:bg-white/10 rounded-full transition-all text-neutral-400 shrink-0">
+              <Upload className="w-5 h-5" />
+            </button>
+            
+            <div className="flex-1 px-2">
+              <Textarea
+                ref={textareaRef}
+                value={inputValue}
+                onChange={(e) => setInputValue(e.target.value)}
+                onKeyDown={handleKeyDown}
+                placeholder="Describe your objective..."
+                className="w-full bg-transparent border-none text-sm focus-visible:ring-0 placeholder:text-neutral-600 resize-none py-3 h-12 scrollbar-none"
+                style={{ overflow: "hidden" }}
+              />
+            </div>
+
+            <button
+              onClick={handleSubmit}
+              disabled={!inputValue.trim() || mutation.isPending}
+              className={cn(
+                "w-12 h-12 rounded-full flex items-center justify-center transition-all duration-500 shrink-0",
+                inputValue.trim() 
+                  ? "bg-primary text-black shadow-[0_0_30px_rgba(var(--primary),0.4)] rotate-0" 
+                  : "bg-white/[0.03] text-neutral-600 rotate-90"
+              )}
+            >
+              {mutation.isPending ? (
+                <Loader2 className="w-5 h-5 animate-spin" />
+              ) : (
+                <ArrowUpIcon className="w-5 h-5" />
+              )}
+            </button>
+          </div>
         </div>
       </div>
     </div>
