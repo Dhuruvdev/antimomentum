@@ -74,14 +74,21 @@ export default function LandingPage() {
             The autonomous workspace for deep research, architectural documentation, and professional design. Join 5,000+ researchers in the Beta.
           </p>
           
-          <div className="w-full max-w-md bg-card/50 backdrop-blur-sm border border-primary/10 p-2 rounded-2xl flex gap-2 mb-12 shadow-2xl">
+          <div className="w-full max-w-lg bg-card/50 backdrop-blur-sm border border-primary/10 p-2 rounded-2xl flex flex-col sm:flex-row gap-2 mb-12 shadow-2xl">
             <Input 
-              className="h-12 border-none bg-transparent focus-visible:ring-0 text-lg placeholder:text-muted-foreground/50" 
+              className="h-12 border-none bg-transparent focus-visible:ring-0 text-lg placeholder:text-muted-foreground/50 flex-1" 
               placeholder="Enter your email address" 
             />
-            <Button className="h-12 px-8 rounded-xl font-bold hover-elevate active-elevate-2 whitespace-nowrap">
-              Join Waitlist
-            </Button>
+            <div className="flex gap-2">
+              <Link href="/~" className="flex-1 sm:flex-none">
+                <Button className="h-12 px-8 rounded-xl font-bold hover-elevate active-elevate-2 whitespace-nowrap w-full">
+                  Try Now
+                </Button>
+              </Link>
+              <Button variant="secondary" className="h-12 px-6 rounded-xl font-bold hover-elevate active-elevate-2 whitespace-nowrap flex-1 sm:flex-none">
+                Join Waitlist
+              </Button>
+            </div>
           </div>
 
           <div className="flex flex-wrap justify-center gap-8 opacity-50 grayscale hover:grayscale-0 transition-all duration-500">
