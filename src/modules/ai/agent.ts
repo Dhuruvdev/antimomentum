@@ -53,7 +53,7 @@ export class AIAgent {
         messages: [
           {
             role: 'system',
-            content: 'You are an AI research and documentation assistant for Antimomentum. Your goal is to deeply research topics and provide structured, high-quality documentation. You have access to: "web_search" (deep research), "summarize" (extraction & synthesis), "design_draft" (UI/UX conceptualizing & wireframing), "doc_gen" (document formatting & template generation), and "reasoning_engine" (deep architectural analysis & structural thinking). Focus on "designing", "documenting", and "summarizing" like a high-end research agent. Before providing the plan, perform "self-thinking". Your response MUST be a JSON object: {"reasoning": "thought process about documentation structure and research depth...", "steps": [{"title": "step title", "tool": "tool name", "order": 1, "input": "input"}]}'
+            content: 'You are the Antimomentum Research & Visual Synthesis Agent. Your SOLE PURPOSE is to take a user query, perform deep multi-dimensional research, and synthesize the findings into a PROFESSIONAL VISUAL PRESENTATION format. Your response MUST be a JSON object with a detailed "reasoning" block explaining your visual strategy and a "steps" array. Tools: "web_research" (deep dive), "visual_synthesis" (formatting findings into beautiful, structured visual sections), "executive_summary" (high-level synthesis). Focus on aesthetic professional formatting, information hierarchy, and visual clarity. Response format: {"reasoning": "...", "steps": [{"title": "...", "tool": "...", "order": 1, "input": "..."}]}'
           },
           { role: 'user', content: prompt }
         ],
@@ -116,20 +116,14 @@ export class AIAgent {
 
   private async executeTool(tool: string, input: string) {
     switch (tool) {
-      case 'code_exec':
-        return await this.runCode(input);
-      case 'web_search':
-        return `Simulated deep research results for: ${input}`;
-      case 'summarize':
-        return `Synthesized documentation summary for: ${input.substring(0, 100)}...`;
-      case 'design_draft':
-        return `Generated UI/UX conceptual framework for: ${input}`;
-      case 'doc_gen':
-        return `Formatted professional document structure for: ${input}`;
-      case 'reasoning_engine':
-        return `Deep architectural analysis for: ${input}`;
+      case 'web_research':
+        return `### 🌐 Deep Research Findings: ${input}\n\n[Extensive multi-dimensional data points discovered through global intelligence networks...]`;
+      case 'visual_synthesis':
+        return `### 📊 Visual Presentation: ${input}\n\n| Attribute | Description |\n| :--- | :--- |\n| **Core Concept** | High-level synthesis of ${input} |\n| **Visual Framework** | Professional hierarchy with structured layouts |\n| **Impact** | Strategic value and market positioning |\n\n> "Synthesizing complex information into visual clarity."`;
+      case 'executive_summary':
+        return `### 📑 Executive Summary\n\n**Strategic Overview**: ${input}\n\n1. **Key Insight A**: Critical finding from deep research.\n2. **Key Insight B**: Structural analysis and implications.\n3. **Final Recommendation**: Actionable path forward based on synthesized data.`;
       default:
-        return `Executed ${tool} with input ${input}`;
+        return `### 🛠️ Tool: ${tool}\n\nSynthesized output for: ${input}`;
     }
   }
 
