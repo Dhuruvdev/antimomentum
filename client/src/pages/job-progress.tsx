@@ -119,221 +119,175 @@ export default function JobProgress() {
   }
 
   return (
-    <div className="flex flex-col h-screen w-full bg-black text-white font-sans overflow-hidden">
-      {/* Top Navigation Bar */}
-      <header className="flex items-center justify-between px-4 h-14 border-b border-neutral-900 bg-black shrink-0">
-        <div className="flex items-center gap-2">
-          <button className="p-2 hover:bg-neutral-900 rounded-lg transition-colors">
-            <LogOut className="w-5 h-5 text-neutral-500" />
+    <div className="flex flex-col h-screen w-full bg-[#050505] text-white font-sans overflow-hidden selection:bg-primary/30">
+      {/* Top Navigation Bar - Mobile Optimized */}
+      <header className="flex items-center justify-between px-4 h-16 border-b border-white/[0.03] bg-black/40 backdrop-blur-xl shrink-0 z-[100]">
+        <div className="flex items-center gap-1.5">
+          <button className="p-2 hover:bg-white/5 active:scale-95 rounded-full transition-all">
+            <ArrowUpIcon className="w-5 h-5 text-neutral-400 rotate-[270deg]" />
           </button>
-          <button className="p-2 hover:bg-neutral-900 rounded-lg transition-colors">
-            <History className="w-5 h-5 text-neutral-500" />
-          </button>
+          <div className="flex flex-col">
+            <span className="text-[10px] font-bold uppercase tracking-widest text-primary/80 leading-none mb-1">Draft</span>
+            <span className="text-sm font-semibold text-neutral-200 truncate max-w-[120px]">
+              {job.prompt.substring(0, 20)}...
+            </span>
+          </div>
         </div>
         
-        <div className="flex items-center gap-2">
-          <SiReplit className="w-5 h-5 text-white" />
-          <span className="text-sm font-medium">Agent</span>
+        <div className="absolute left-1/2 -translate-x-1/2 flex items-center gap-2">
+          <div className="w-2 h-2 rounded-full bg-primary animate-pulse shadow-[0_0_8px_rgba(var(--primary),0.5)]" />
+          <Brain className="w-4 h-4 text-white opacity-80" />
         </div>
 
-        <div className="flex items-center gap-2">
-          <button className="p-2 hover:bg-neutral-900 rounded-lg transition-colors">
-            <MessageSquarePlus className="w-5 h-5 text-neutral-500" />
+        <div className="flex items-center gap-1">
+          <button className="p-2 hover:bg-white/5 active:scale-95 rounded-full transition-all text-neutral-400">
+            <Download className="w-5 h-5" />
           </button>
-          <button className="p-2 hover:bg-neutral-900 rounded-lg transition-colors">
-            <MoreVertical className="w-5 h-5 text-neutral-500" />
+          <button className="p-2 hover:bg-white/5 active:scale-95 rounded-full transition-all text-neutral-400">
+            <MoreVertical className="w-5 h-5" />
           </button>
         </div>
       </header>
 
-      {/* Main Content Area */}
-      <main className="flex-1 overflow-y-auto p-4 space-y-8 custom-scrollbar pb-40 max-w-4xl mx-auto w-full">
-        <BackgroundBeams className="opacity-10 pointer-events-none" />
+      {/* Main Content Area - Delv AI Style */}
+      <main className="flex-1 overflow-y-auto px-4 py-8 space-y-10 custom-scrollbar pb-40 max-w-2xl mx-auto w-full scroll-smooth">
+        <BackgroundBeams className="opacity-[0.03] pointer-events-none" />
         
-        {/* User Instruction Bubble - Refactored for Documenting Feel */}
-        <div className="flex flex-col gap-2 relative z-10">
-           <div className="flex items-center gap-2 text-neutral-500 mb-2">
-             <div className="p-1.5 bg-neutral-900 rounded-lg">
-               <Zap className="w-4 h-4" />
-             </div>
-             <span className="text-xs font-bold uppercase tracking-widest">Draft: Research Session</span>
-           </div>
-           
-           <h1 className="text-2xl md:text-4xl font-bold text-white leading-tight">
-             {job.prompt}
-           </h1>
-        </div>
-
-        {/* Action Pill & Reasoning */}
-        <div className="flex flex-col gap-6 relative z-10">
-          <div className="flex items-center justify-between border-b border-neutral-900 pb-4">
-            <div className="flex items-center gap-1.5 px-3 py-1.5 bg-neutral-900 rounded-full border border-neutral-800">
-              <Brain className="w-3.5 h-3.5 text-primary" />
-              <span className="text-xs text-neutral-400 font-medium tracking-wide">
-                Agent Thinking...
-              </span>
-            </div>
-            <div className="flex items-center gap-2">
-              <Badge variant="outline" className="text-[10px] text-neutral-500">{job.steps.length} Actions</Badge>
-              <Badge variant="outline" className="text-[10px] text-green-500/80">Alive Document</Badge>
-            </div>
+        {/* Title Section */}
+        <header className="space-y-4 relative z-10">
+          <div className="inline-flex items-center gap-2 px-2.5 py-1 rounded-full bg-white/[0.03] border border-white/[0.05]">
+            <Globe className="w-3.5 h-3.5 text-primary" />
+            <span className="text-[10px] font-bold uppercase tracking-[0.2em] text-neutral-400">Research Intelligence</span>
           </div>
-
+          <h1 className="text-3xl md:text-5xl font-bold tracking-tight text-neutral-100 leading-[1.15]">
+            {job.prompt}
+          </h1>
+          
           {job.reasoning && (
             <motion.div 
-              initial={{ opacity: 0, x: -10 }}
-              animate={{ opacity: 1, x: 0 }}
-              className="border-l-2 border-primary/30 pl-6 py-2"
+              initial={{ opacity: 0, y: 10 }}
+              animate={{ opacity: 1, y: 0 }}
+              className="pt-4 border-t border-white/[0.03]"
             >
-              <p className="text-lg text-neutral-300 font-serif italic leading-relaxed">
-                {job.reasoning}
+              <p className="text-base md:text-lg text-neutral-400 font-medium leading-relaxed italic opacity-80">
+                "{job.reasoning}"
               </p>
             </motion.div>
           )}
-        </div>
+        </header>
 
-        {/* Document Body / Execution Log */}
-        <div className="space-y-12 relative z-10 pt-4">
-           <AnimatePresence>
+        {/* Content Cards - The "Alive Document" Feed */}
+        <div className="space-y-12 relative z-10">
+           <AnimatePresence mode="popLayout">
              {job.steps.map((step, idx) => (
-               <motion.div 
+               <motion.section 
                  key={step.id}
-                 initial={{ opacity: 0, y: 20 }}
-                 animate={{ opacity: 1, y: 0 }}
-                 className="group"
+                 initial={{ opacity: 0, scale: 0.98, y: 20 }}
+                 animate={{ opacity: 1, scale: 1, y: 0 }}
+                 transition={{ duration: 0.5, ease: [0.23, 1, 0.32, 1] }}
+                 className="group relative"
                >
-                 <div className="flex items-start gap-4 mb-4">
-                   <div className="mt-1 shrink-0">
+                 {/* Step Header */}
+                 <div className="flex items-center gap-3 mb-5">
+                   <div className={cn(
+                     "w-8 h-8 rounded-xl flex items-center justify-center border transition-all duration-500",
+                     step.status === 'completed' 
+                       ? "bg-primary/10 border-primary/20 text-primary" 
+                       : "bg-white/[0.03] border-white/[0.05] text-neutral-500"
+                   )}>
                      {step.status === 'completed' ? (
-                       <div className="w-5 h-5 bg-white rounded-full flex items-center justify-center">
-                         <CheckCircle2 className="w-3.5 h-3.5 text-black" />
-                       </div>
+                       <CheckCircle2 className="w-4 h-4" />
                      ) : step.status === 'in_progress' ? (
-                       <Loader2 className="w-5 h-5 animate-spin text-primary" />
+                       <Loader2 className="w-4 h-4 animate-spin" />
                      ) : (
-                       <div className="w-5 h-5 border-2 border-neutral-800 rounded-full" />
+                       <span className="text-xs font-bold">{idx + 1}</span>
                      )}
                    </div>
-                   <div className="flex-1">
-                      <h3 className={cn(
-                        "text-lg font-semibold transition-colors",
-                        step.status === 'completed' ? "text-neutral-500" : "text-white"
-                      )}>{step.title}</h3>
-                      
-                      {step.output && (
-                        <div className="relative group/content">
-                          <motion.div 
-                            initial={{ opacity: 0 }}
-                            animate={{ opacity: 1 }}
-                            className="mt-4 p-5 bg-neutral-900/50 border border-neutral-800 rounded-2xl text-neutral-300 text-[15px] leading-relaxed font-sans shadow-inner"
-                          >
-                            <TypingAnimation text={step.output} />
-                          </motion.div>
-                          <div className="absolute top-6 right-2 flex gap-2 opacity-0 group-hover/content:opacity-100 transition-opacity">
-                            <button 
-                              onClick={() => exportToPdf(step.title, step.output!)}
-                              className="p-1.5 bg-black/50 hover:bg-black rounded-lg border border-neutral-800 text-neutral-400 hover:text-white transition-colors"
-                              title="Export to PDF"
-                            >
-                              <FileCode className="w-3.5 h-3.5" />
-                            </button>
-                            <button 
-                              onClick={() => exportToDocx(step.title, step.output!)}
-                              className="p-1.5 bg-black/50 hover:bg-black rounded-lg border border-neutral-800 text-neutral-400 hover:text-white transition-colors"
-                              title="Export to Word"
-                            >
-                              <FileText className="w-3.5 h-3.5" />
-                            </button>
-                          </div>
-                        </div>
-                      )}
-                   </div>
+                   <h3 className={cn(
+                     "text-sm font-bold tracking-wide uppercase opacity-90",
+                     step.status === 'completed' ? "text-primary" : "text-neutral-400"
+                   )}>
+                     {step.title}
+                   </h3>
                  </div>
-                 {idx < job.steps.length - 1 && (
-                   <div className="ml-[10px] w-px h-12 bg-neutral-900 my-2" />
-                 )}
-               </motion.div>
+
+                 {/* Step Content Card */}
+                 <div className="relative">
+                   <div className="absolute -left-4 top-0 bottom-0 w-[1px] bg-gradient-to-b from-primary/20 via-transparent to-transparent opacity-0 group-hover:opacity-100 transition-opacity" />
+                   
+                   {step.output ? (
+                     <div className="relative group/content overflow-hidden rounded-[2rem] bg-white/[0.02] border border-white/[0.05] p-6 md:p-8 backdrop-blur-sm shadow-2xl transition-all duration-500 hover:bg-white/[0.04] hover:border-white/[0.1]">
+                       <div className="absolute top-0 right-0 w-32 h-32 bg-primary/5 blur-[50px] -z-10 opacity-0 group-hover/content:opacity-100 transition-opacity" />
+                       
+                       <div className="prose prose-neutral prose-invert max-w-none">
+                         <TypingAnimation text={step.output} />
+                       </div>
+
+                       {/* Action Overlay */}
+                       <div className="flex items-center gap-2 mt-8 pt-6 border-t border-white/[0.03]">
+                         <button 
+                           onClick={() => exportToPdf(step.title, step.output!)}
+                           className="flex items-center gap-2 px-4 py-2 bg-white/[0.05] hover:bg-white/[0.1] rounded-full text-[10px] font-bold uppercase tracking-wider transition-all"
+                         >
+                           <FileCode className="w-3 h-3" />
+                           Export PDF
+                         </button>
+                         <button 
+                           onClick={() => exportToDocx(step.title, step.output!)}
+                           className="flex items-center gap-2 px-4 py-2 bg-white/[0.05] hover:bg-white/[0.1] rounded-full text-[10px] font-bold uppercase tracking-wider transition-all"
+                         >
+                           <FileText className="w-3 h-3" />
+                           Word Draft
+                         </button>
+                       </div>
+                     </div>
+                   ) : (
+                     <div className="h-24 flex items-center justify-center rounded-[2rem] border border-dashed border-white/[0.05] opacity-20">
+                       <Loader2 className="w-6 h-6 animate-spin" />
+                     </div>
+                   )}
+                 </div>
+               </motion.section>
              ))}
            </AnimatePresence>
         </div>
       </main>
 
-      {/* Floating Bottom Bar */}
-      <div className="fixed bottom-0 left-0 right-0 p-4 bg-gradient-to-t from-black via-black to-transparent z-50">
-        <div className="max-w-4xl mx-auto">
-          <div className="relative bg-neutral-900 rounded-xl border border-neutral-800 focus-within:border-neutral-700 transition-colors">
-            <div className="overflow-y-auto">
-              <Textarea
-                ref={textareaRef}
-                value={inputValue}
-                onChange={(e) => setInputValue(e.target.value)}
-                onKeyDown={handleKeyDown}
-                placeholder="Ask Antimomentum to Write Something..."
-                className={cn(
-                  "w-full px-4 py-3",
-                  "resize-none",
-                  "bg-transparent",
-                  "border-none",
-                  "text-white text-sm md:text-base",
-                  "focus:outline-none",
-                  "focus-visible:ring-0 focus-visible:ring-offset-0",
-                  "placeholder:text-neutral-500 placeholder:text-sm",
-                  "min-h-[60px]"
-                )}
-                style={{
-                  overflow: "hidden",
-                }}
-              />
-            </div>
-
-            <div className="flex items-center justify-between p-2 md:p-3">
-              <div className="flex items-center gap-1 md:gap-2">
-                <button
-                  type="button"
-                  className="group p-2 hover:bg-neutral-800 rounded-lg transition-colors flex items-center gap-1"
-                >
-                  <Paperclip className="w-4 h-4 text-white" />
-                  <span className="text-xs text-zinc-400 hidden sm:group-hover:inline transition-opacity">
-                    Attach
-                  </span>
-                </button>
-              </div>
-              <div className="flex items-center gap-1 md:gap-2">
-                <button
-                  type="button"
-                  className="px-2 py-1 rounded-lg text-xs md:text-sm text-zinc-400 transition-colors border border-dashed border-zinc-700 hover:border-zinc-600 hover:bg-zinc-800 flex items-center justify-between gap-1"
-                >
-                  <Plus className="w-4 h-4" />
-                  <span className="hidden xs:inline">Project</span>
-                </button>
-                <button
-                  type="button"
-                  onClick={handleSubmit}
-                  disabled={!inputValue.trim() || mutation.isPending}
-                  className={cn(
-                    "p-1.5 md:px-2 md:py-1.5 rounded-lg text-sm transition-colors border border-zinc-700 hover:border-zinc-600 hover:bg-zinc-800 flex items-center justify-between gap-1",
-                    inputValue.trim()
-                      ? "bg-white text-black"
-                      : "text-zinc-400"
-                  )}
-                >
-                  {mutation.isPending ? (
-                    <Loader2 className="w-4 h-4 animate-spin text-zinc-400" />
-                  ) : (
-                    <ArrowUpIcon
-                      className={cn(
-                        "w-4 h-4",
-                        inputValue.trim()
-                          ? "text-black"
-                          : "text-zinc-400"
-                      )}
-                    />
-                  )}
-                  <span className="sr-only">Send</span>
-                </button>
-              </div>
-            </div>
+      {/* Mobile Input Bar - Delv AI Style */}
+      <div className="fixed bottom-6 left-1/2 -translate-x-1/2 w-[calc(100%-2rem)] max-w-lg z-50">
+        <div className="bg-neutral-900/80 backdrop-blur-2xl rounded-[2.5rem] border border-white/[0.08] shadow-[0_20px_50px_rgba(0,0,0,0.5)] p-2 flex items-center gap-2">
+          <button className="p-3 bg-white/[0.03] hover:bg-white/10 rounded-full transition-all text-neutral-400">
+            <Plus className="w-5 h-5" />
+          </button>
+          
+          <div className="flex-1 px-2">
+            <Textarea
+              ref={textareaRef}
+              value={inputValue}
+              onChange={(e) => setInputValue(e.target.value)}
+              onKeyDown={handleKeyDown}
+              placeholder="Evolve the research..."
+              className="w-full bg-transparent border-none text-sm focus-visible:ring-0 placeholder:text-neutral-600 resize-none py-3 h-11"
+              style={{ overflow: "hidden" }}
+            />
           </div>
+
+          <button
+            onClick={handleSubmit}
+            disabled={!inputValue.trim() || mutation.isPending}
+            className={cn(
+              "w-11 h-11 rounded-full flex items-center justify-center transition-all duration-300",
+              inputValue.trim() 
+                ? "bg-primary text-black shadow-[0_0_20px_rgba(var(--primary),0.3)]" 
+                : "bg-white/[0.03] text-neutral-600"
+            )}
+          >
+            {mutation.isPending ? (
+              <Loader2 className="w-5 h-5 animate-spin" />
+            ) : (
+              <ArrowUpIcon className="w-5 h-5" />
+            )}
+          </button>
         </div>
       </div>
     </div>
