@@ -77,14 +77,22 @@ export default function JobProgress() {
     <div className="flex h-screen w-full bg-[#050505] text-white font-sans overflow-hidden selection:bg-primary/30">
       {/* Lucid Sidebar - Desktop/Mobile Responsive */}
       <aside className={cn(
-        "flex flex-col border-r border-white/[0.03] bg-black/40 backdrop-blur-xl transition-all duration-300 z-[100]",
-        isSidebarOpen ? "w-64" : "w-0 overflow-hidden"
+        "fixed md:relative flex flex-col border-r border-white/[0.03] bg-black/40 backdrop-blur-xl transition-all duration-300 z-[100] h-full",
+        isSidebarOpen ? "w-64 translate-x-0" : "w-0 -translate-x-full md:w-0 overflow-hidden"
       )}>
-        <div className="p-6 flex items-center gap-3">
-          <div className="w-8 h-8 rounded-lg bg-primary/20 flex items-center justify-center border border-primary/30">
-            <Zap className="w-5 h-5 text-primary shadow-[0_0_10px_rgba(var(--primary),0.5)]" />
+        <div className="p-6 flex items-center justify-between gap-3">
+          <div className="flex items-center gap-3">
+            <div className="w-8 h-8 rounded-lg bg-primary/20 flex items-center justify-center border border-primary/30">
+              <Zap className="w-5 h-5 text-primary shadow-[0_0_10px_rgba(var(--primary),0.5)]" />
+            </div>
+            <span className="font-bold tracking-tight text-lg text-neutral-100">Antimomentum</span>
           </div>
-          <span className="font-bold tracking-tight text-lg text-neutral-100">Antimomentum</span>
+          <button 
+            onClick={() => setIsSidebarOpen(false)}
+            className="md:hidden p-2 hover:bg-white/5 rounded-lg text-neutral-400"
+          >
+            <PanelRightClose className="w-5 h-5" />
+          </button>
         </div>
 
         <nav className="flex-1 px-4 space-y-8 overflow-y-auto py-4">
@@ -131,25 +139,25 @@ export default function JobProgress() {
 
       <div className="flex-1 flex flex-col relative">
         {/* Main Content Header */}
-        <header className="flex items-center justify-between px-6 h-16 border-b border-white/[0.03] bg-black/20 backdrop-blur-xl shrink-0 z-50">
-          <div className="flex items-center gap-4">
+        <header className="flex items-center justify-between px-4 md:px-6 h-16 border-b border-white/[0.03] bg-black/20 backdrop-blur-xl shrink-0 z-50">
+          <div className="flex items-center gap-2 md:gap-4">
             <button 
               onClick={() => setIsSidebarOpen(!isSidebarOpen)}
               className="p-2 hover:bg-white/5 rounded-lg transition-all text-neutral-400"
             >
               <PanelRightClose className={cn("w-5 h-5", !isSidebarOpen && "rotate-180")} />
             </button>
-            <div className="flex items-center gap-3">
+            <div className="flex items-center gap-2 md:gap-3">
               <Search className="w-4 h-4 text-neutral-500" />
               <div className="h-4 w-px bg-white/[0.05]" />
-              <span className="text-sm font-medium text-neutral-300 truncate max-w-[200px]">
+              <span className="text-sm font-medium text-neutral-300 truncate max-w-[100px] md:max-w-[200px]">
                 {job.prompt}
               </span>
             </div>
           </div>
 
-          <div className="flex items-center gap-3">
-            <div className="hidden md:flex items-center gap-2 px-3 py-1.5 rounded-full bg-white/[0.03] border border-white/[0.05]">
+          <div className="flex items-center gap-1 md:gap-3">
+            <div className="hidden sm:flex items-center gap-2 px-3 py-1.5 rounded-full bg-white/[0.03] border border-white/[0.05]">
               <Sparkles className="w-3.5 h-3.5 text-primary animate-pulse" />
               <span className="text-xs font-medium text-neutral-400">Agent Status: Active</span>
             </div>
@@ -165,22 +173,22 @@ export default function JobProgress() {
         {/* Central Workspace Area */}
         <main className="flex-1 flex overflow-hidden">
           {/* Middle Workspace: Objective & Documents */}
-          <div className="flex-1 overflow-y-auto px-6 py-10 space-y-12 custom-scrollbar pb-40 max-w-4xl mx-auto w-full relative">
+          <div className="flex-1 overflow-y-auto px-4 md:px-6 py-6 md:py-10 space-y-8 md:space-y-12 custom-scrollbar pb-40 w-full relative">
             <BackgroundBeams className="opacity-[0.02] pointer-events-none" />
             
-            <div className="space-y-6 relative z-10">
+            <div className="space-y-6 relative z-10 max-w-4xl mx-auto">
               <div className="space-y-2">
-                <h2 className="text-2xl font-bold tracking-tight text-neutral-100 flex items-center gap-2">
+                <h2 className="text-xl md:text-2xl font-bold tracking-tight text-neutral-100 flex items-center gap-2">
                   <Globe className="w-5 h-5 text-primary" />
                   Objective Analysis
                 </h2>
-                <p className="text-neutral-400 leading-relaxed text-lg">
+                <p className="text-neutral-400 leading-relaxed text-base md:text-lg">
                   {job.prompt}
                 </p>
               </div>
 
               {/* Live Page Preview Grid */}
-              <div className="grid grid-cols-1 md:grid-cols-2 gap-8 pt-8">
+              <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-2 gap-4 md:gap-8 pt-4 md:pt-8">
                 {job.steps.map((step: Step, idx: number) => (
                   <motion.div
                     key={step.id}
@@ -198,45 +206,44 @@ export default function JobProgress() {
                       </span>
                     </div>
 
-                    {/* The "Live Page" Preview */}
-                    <div className="relative aspect-[3/4] rounded-[2rem] bg-white/[0.01] border border-white/[0.05] shadow-2xl overflow-hidden group-hover:border-primary/20 transition-all duration-500 group-hover:shadow-primary/5">
+                    <div className="relative aspect-[3/4] rounded-[1.5rem] md:rounded-[2rem] bg-white/[0.01] border border-white/[0.05] shadow-2xl overflow-hidden group-hover:border-primary/20 transition-all duration-500 group-hover:shadow-primary/5">
                       {/* Paper Texture Overlay */}
                       <div className="absolute inset-0 opacity-[0.03] pointer-events-none bg-[url('https://www.transparenttextures.com/patterns/paper-fibers.png')]" />
                       
-                      <div className="absolute inset-0 p-8 flex flex-col">
+                      <div className="absolute inset-0 p-4 md:p-8 flex flex-col">
                         {step.output ? (
                           <>
-                            <div className="prose prose-neutral prose-invert prose-sm max-w-none overflow-hidden line-clamp-[15] text-neutral-300 font-serif leading-relaxed">
+                            <div className="prose prose-neutral prose-invert prose-xs md:prose-sm max-w-none overflow-hidden line-clamp-[12] md:line-clamp-[15] text-neutral-300 font-serif leading-relaxed">
                               {step.output}
                             </div>
-                            <div className="mt-auto pt-6 flex items-center justify-between border-t border-white/[0.05]">
+                            <div className="mt-auto pt-4 md:pt-6 flex items-center justify-between border-t border-white/[0.05]">
                               <div className="flex items-center gap-2">
-                                <Badge variant="outline" className="text-[9px] uppercase border-white/[0.1] bg-white/[0.03]">Document Page</Badge>
+                                <Badge variant="outline" className="text-[8px] md:text-[9px] uppercase border-white/[0.1] bg-white/[0.03]">Document Page</Badge>
                                 {step.tool === 'visual_synthesis' && <ImageIcon className="w-3 h-3 text-primary" />}
                                 {step.tool === 'web_research' && <Globe className="w-3 h-3 text-blue-400" />}
                               </div>
-                              <span className="text-[10px] font-mono text-neutral-600">p.{idx + 1}</span>
+                              <span className="text-[9px] md:text-[10px] font-mono text-neutral-600">p.{idx + 1}</span>
                             </div>
                           </>
                         ) : (
-                          <div className="flex-1 flex flex-col items-center justify-center gap-4 opacity-20">
-                            <Loader2 className="w-8 h-8 animate-spin" />
-                            <span className="text-xs font-medium uppercase tracking-[0.2em]">Synthesizing...</span>
+                          <div className="flex-1 flex flex-col items-center justify-center gap-3 md:gap-4 opacity-20">
+                            <Loader2 className="w-6 h-6 md:w-8 h-8 animate-spin" />
+                            <span className="text-[10px] md:text-xs font-medium uppercase tracking-[0.2em]">Synthesizing...</span>
                           </div>
                         )}
                       </div>
 
-                      {/* Hover Actions */}
-                      <div className="absolute inset-0 bg-black/60 opacity-0 group-hover:opacity-100 transition-opacity flex items-center justify-center gap-3 backdrop-blur-sm">
+                      {/* Actions - Always visible on mobile, hover on desktop */}
+                      <div className="absolute inset-x-0 bottom-0 p-4 bg-gradient-to-t from-black/80 to-transparent md:inset-0 md:bg-black/60 md:opacity-0 group-hover:opacity-100 transition-opacity flex items-center justify-center gap-3 backdrop-blur-sm">
                         <button 
                           onClick={() => exportToPdf(step.title, step.output!)}
-                          className="flex items-center gap-2 px-5 py-2.5 bg-primary text-black rounded-full text-xs font-bold uppercase tracking-wider shadow-lg transform translate-y-4 group-hover:translate-y-0 transition-all"
+                          className="flex items-center gap-2 px-4 py-2 md:px-5 md:py-2.5 bg-primary text-black rounded-full text-[10px] md:text-xs font-bold uppercase tracking-wider shadow-lg transform md:translate-y-4 md:group-hover:translate-y-0 transition-all"
                         >
-                          <Download className="w-4 h-4" />
-                          Download Page
+                          <Download className="w-3 h-3 md:w-4 h-4" />
+                          Download
                         </button>
-                        <button className="p-2.5 bg-white/10 hover:bg-white/20 rounded-full text-white backdrop-blur-md transform translate-y-4 group-hover:translate-y-0 transition-all delay-75">
-                          <Plus className="w-4 h-4" />
+                        <button className="p-2 md:p-2.5 bg-white/10 hover:bg-white/20 rounded-full text-white backdrop-blur-md transform md:translate-y-4 md:group-hover:translate-y-0 transition-all delay-75">
+                          <Plus className="w-3 h-3 md:w-4 h-4" />
                         </button>
                       </div>
                     </div>
@@ -246,8 +253,8 @@ export default function JobProgress() {
             </div>
           </div>
 
-          {/* Right Sidebar: Plan Before Execution */}
-          <aside className="hidden lg:flex flex-col w-80 border-l border-white/[0.03] bg-black/20 backdrop-blur-xl p-6 space-y-8 overflow-y-auto z-50">
+          {/* Right Sidebar: Plan Before Execution - Collapsible on Mobile */}
+          <aside className="hidden xl:flex flex-col w-80 border-l border-white/[0.03] bg-black/20 backdrop-blur-xl p-6 space-y-8 overflow-y-auto z-50">
             <div className="space-y-6">
               <div className="flex items-center justify-between">
                 <div className="flex items-center gap-2">
