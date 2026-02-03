@@ -1,4 +1,3 @@
-import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Badge } from "@/components/ui/badge";
@@ -15,314 +14,247 @@ import {
   BookOpen,
   Layout,
   UserPlus,
-  Cpu
+  Cpu,
+  Menu,
+  X,
+  ChevronDown
 } from "lucide-react";
-import { useState } from "react";
-import { useForm } from "react-hook-form";
-import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage } from "@/components/ui/form";
-import { z } from "zod";
-import { zodResolver } from "@hookform/resolvers/zod";
+import { useState, useEffect, useRef } from "react";
 import { Link } from "wouter";
+import { motion, AnimatePresence } from "framer-motion";
+import gsap from "gsap";
+import { ScrollTrigger } from "gsap/ScrollTrigger";
 
-const signUpSchema = z.object({
-  email: z.string().email(),
-  password: z.string().min(8)
-});
+gsap.registerPlugin(ScrollTrigger);
 
 export default function LandingPage() {
-  const form = useForm({
-    resolver: zodResolver(signUpSchema),
-    defaultValues: { email: "", password: "" }
-  });
+  const [isMenuOpen, setIsMenuOpen] = useState(false);
+  const heroRef = useRef<HTMLDivElement>(null);
+  const logoRef = useRef<HTMLDivElement>(null);
+
+  useEffect(() => {
+    if (heroRef.current) {
+      gsap.from(heroRef.current.querySelectorAll(".gsap-reveal"), {
+        y: 60,
+        opacity: 0,
+        duration: 1.2,
+        stagger: 0.2,
+        ease: "power4.out",
+        scrollTrigger: {
+          trigger: heroRef.current,
+          start: "top 80%",
+        }
+      });
+    }
+
+    // Floating animation for logo
+    if (logoRef.current) {
+      gsap.to(logoRef.current, {
+        y: -10,
+        duration: 2,
+        repeat: -1,
+        yoyo: true,
+        ease: "sine.inOut"
+      });
+    }
+  }, []);
 
   return (
-    <div className="min-h-screen bg-background text-foreground font-sans">
-      {/* Navigation Header */}
-      <nav className="fixed top-0 left-0 right-0 z-50 bg-background/80 backdrop-blur-md border-b">
-        <div className="max-w-7xl mx-auto px-6 h-16 flex items-center justify-between">
-          <div className="flex items-center gap-2 font-bold text-xl tracking-tight">
-            <div className="bg-primary p-1 rounded-md">
-              <Brain className="w-5 h-5 text-primary-foreground" />
+    <div className="min-h-screen bg-white text-black font-sans selection:bg-black selection:text-white">
+      {/* Google-style Navigation */}
+      <nav className="fixed top-0 left-0 right-0 z-[100] bg-white/80 backdrop-blur-md border-b border-neutral-100">
+        <div className="max-w-7xl mx-auto px-4 md:px-6 h-16 flex items-center justify-between">
+          <div className="flex items-center gap-2 group cursor-pointer">
+            <div ref={logoRef} className="w-8 h-8 flex items-center justify-center">
+              <svg viewBox="0 0 24 24" className="w-6 h-6 fill-primary">
+                <path d="M12 2L2 19h20L12 2zm0 3.8l7.5 12.7H4.5L12 5.8z" />
+              </svg>
             </div>
-            Antimomentum
+            <span className="text-xl font-medium tracking-tight text-neutral-900">Google <span className="font-normal text-neutral-500">Antigravity</span></span>
           </div>
-          <div className="hidden md:flex items-center gap-8">
-            <Link href="/capabilities" className="text-sm font-medium text-muted-foreground hover:text-primary transition-colors">Capabilities</Link>
-            <Link href="#features" className="text-sm font-medium text-muted-foreground hover:text-primary transition-colors">Features</Link>
-            <Link href="#pricing" className="text-sm font-medium text-muted-foreground hover:text-primary transition-colors">Pricing</Link>
+          
+          <div className="hidden lg:flex items-center gap-8">
+            <button className="text-sm font-medium text-neutral-600 hover:text-black transition-colors flex items-center gap-1">Product <ChevronDown className="w-3 h-3" /></button>
+            <button className="text-sm font-medium text-neutral-600 hover:text-black transition-colors flex items-center gap-1">Use Cases <ChevronDown className="w-3 h-3" /></button>
+            <Link href="#" className="text-sm font-medium text-neutral-600 hover:text-black transition-colors">Pricing</Link>
+            <Link href="#" className="text-sm font-medium text-neutral-600 hover:text-black transition-colors">Blog</Link>
           </div>
-          <div className="flex items-center gap-4">
-            <Button variant="ghost" className="hidden sm:inline-flex">Login</Button>
-            <Button className="hover-elevate active-elevate-2 px-6 rounded-full font-bold">Join Waitlist</Button>
+
+          <div className="flex items-center gap-2">
+            <Button variant="ghost" size="icon" className="lg:hidden rounded-full" onClick={() => setIsMenuOpen(!isMenuOpen)}>
+              {isMenuOpen ? <X className="w-5 h-5" /> : <Menu className="w-5 h-5" />}
+            </Button>
+            <Button className="hidden md:flex bg-neutral-100 hover:bg-neutral-200 text-black border-none px-6 rounded-full font-medium h-10 transition-all shadow-none">
+              Sign In
+            </Button>
           </div>
         </div>
       </nav>
 
-      {/* Hero Section */}
-      <header className="relative pt-32 pb-20 px-6 border-b overflow-hidden text-center">
-        <div className="absolute inset-0 bg-gradient-to-br from-primary/5 via-transparent to-accent/5 -z-10" />
-        <div className="max-w-6xl mx-auto flex flex-col items-center">
-          <Badge className="mb-6 py-1.5 px-4 text-xs font-bold uppercase tracking-wider" variant="secondary">
-            <Sparkles className="w-3.5 h-3.5 mr-2 text-primary" />
-            Beta v1 Waitlist Now Active
-          </Badge>
-          <h1 className="text-5xl md:text-8xl font-bold tracking-tight mb-8 leading-[1.1]">
-            Experience the <br />
-            <span className="text-primary italic">Intelligence Revolution</span>
-          </h1>
-          <p className="text-xl md:text-2xl text-muted-foreground max-w-3xl mb-12 font-medium">
-            The autonomous workspace for deep research, architectural documentation, and professional design. Join 5,000+ researchers in the Beta.
-          </p>
-          
-          <div className="w-full max-w-lg bg-card/50 backdrop-blur-sm border border-primary/10 p-2 rounded-2xl flex flex-col sm:flex-row gap-2 mb-12 shadow-2xl">
-            <Input 
-              className="h-12 border-none bg-transparent focus-visible:ring-0 text-lg placeholder:text-muted-foreground/50 flex-1" 
-              placeholder="Enter your email address" 
-            />
-            <div className="flex gap-2">
-              <Link href="/~" className="flex-1 sm:flex-none">
-                <Button className="h-12 px-8 rounded-xl font-bold hover-elevate active-elevate-2 whitespace-nowrap w-full">
-                  Try Now
-                </Button>
-              </Link>
-              <Button variant="secondary" className="h-12 px-6 rounded-xl font-bold hover-elevate active-elevate-2 whitespace-nowrap flex-1 sm:flex-none">
-                Join Waitlist
-              </Button>
+      {/* Mobile Menu */}
+      <AnimatePresence>
+        {isMenuOpen && (
+          <motion.div 
+            initial={{ opacity: 0, y: -20 }}
+            animate={{ opacity: 1, y: 0 }}
+            exit={{ opacity: 0, y: -20 }}
+            className="fixed inset-0 z-[90] bg-white pt-20 px-6 lg:hidden"
+          >
+            <div className="space-y-6">
+              {['Product', 'Use Cases', 'Pricing', 'Blog', 'Resources'].map((item) => (
+                <div key={item} className="text-2xl font-medium text-neutral-900 border-b border-neutral-100 pb-4 flex justify-between items-center">
+                  {item}
+                  <ChevronDown className="w-5 h-5 text-neutral-400" />
+                </div>
+              ))}
             </div>
+          </motion.div>
+        )}
+      </AnimatePresence>
+
+      {/* Hero Section */}
+      <header ref={heroRef} className="relative pt-48 pb-32 px-6 overflow-hidden text-center bg-[#fafafa]">
+        {/* Subtle Dots Pattern */}
+        <div className="absolute inset-0 opacity-[0.05] pointer-events-none bg-[radial-gradient(#000_1px,transparent_1px)] [background-size:20px_20px]" />
+        
+        <div className="max-w-4xl mx-auto flex flex-col items-center relative z-10">
+          <div className="gsap-reveal flex items-center gap-2 mb-12">
+            <svg viewBox="0 0 24 24" className="w-10 h-10 fill-primary">
+              <path d="M12 2L2 19h20L12 2zm0 3.8l7.5 12.7H4.5L12 5.8z" />
+            </svg>
+            <span className="text-3xl font-medium tracking-tight">Google Antigravity</span>
           </div>
 
-          <div className="flex flex-wrap justify-center gap-8 opacity-50 grayscale hover:grayscale-0 transition-all duration-500">
-            <div className="flex items-center gap-2 font-bold text-sm">
-              <ShieldCheck className="w-5 h-5" />
-              SECURE
-            </div>
-            <div className="flex items-center gap-2 font-bold text-sm">
-              <Zap className="w-5 h-5" />
-              INSTANT
-            </div>
-            <div className="flex items-center gap-2 font-bold text-sm">
-              <Brain className="w-5 h-5" />
-              INTELLIGENT
-            </div>
+          <h1 className="gsap-reveal text-5xl md:text-7xl font-medium tracking-tight mb-16 leading-[1.1] text-neutral-900">
+            Experience liftoff with the <br />
+            next-generation IDE
+          </h1>
+          
+          <div className="gsap-reveal flex flex-col sm:flex-row gap-4 w-full justify-center items-center">
+            <Link href="/~">
+              <Button className="h-14 px-10 rounded-full bg-black hover:bg-neutral-800 text-white font-medium text-lg flex items-center gap-3 transition-all">
+                <div className="w-5 h-5 flex items-center justify-center">
+                  <svg viewBox="0 0 24 24" className="w-4 h-4 fill-current">
+                    <path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm-1 14.5v-9l6 4.5-6 4.5z" />
+                  </svg>
+                </div>
+                Download for Linux
+              </Button>
+            </Link>
+            <Button variant="ghost" className="h-14 px-10 rounded-full bg-neutral-100 hover:bg-neutral-200 text-black font-medium text-lg">
+              Explore use cases
+            </Button>
           </div>
         </div>
       </header>
 
-      <main className="max-w-6xl mx-auto px-6 py-24 space-y-32">
-        {/* Research Pulse Section */}
-        <section id="features">
-          <div className="flex items-center justify-between mb-12 gap-4 flex-wrap">
-            <div className="space-y-2">
-              <h2 className="text-3xl md:text-5xl font-bold flex items-center gap-3">
-                <Globe className="w-10 h-10 text-primary" />
-                Intelligence Pulse
-              </h2>
-              <p className="text-muted-foreground text-lg">Real-time updates from our global research network.</p>
-            </div>
-            <div className="flex items-center gap-3 px-4 py-2 bg-primary/5 rounded-full border border-primary/10">
-              <span className="flex h-2.5 w-2.5 rounded-full bg-green-500 animate-pulse" />
-              <span className="text-xs font-bold uppercase tracking-widest text-primary">Live Research Stream</span>
+      {/* Video/Preview Section */}
+      <section className="py-24 px-6 bg-white flex flex-col items-center">
+        <div className="max-w-5xl w-full aspect-video rounded-[2.5rem] bg-black overflow-hidden shadow-2xl relative group cursor-pointer">
+          <div className="absolute inset-0 flex items-center justify-center bg-black/20 group-hover:bg-black/10 transition-all">
+            <div className="w-20 h-20 rounded-full bg-white/20 backdrop-blur-md flex items-center justify-center group-hover:scale-110 transition-transform">
+              <div className="w-0 h-0 border-t-[10px] border-t-transparent border-l-[18px] border-l-white border-b-[10px] border-b-transparent ml-1" />
             </div>
           </div>
-          <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
-            <Card className="hover-elevate border-primary/10 bg-card/50 backdrop-blur-sm p-2 group">
-              <CardHeader className="gap-3">
-                <div className="p-2 bg-blue-500/10 rounded-lg w-fit group-hover:bg-blue-500/20 transition-colors">
-                  <Brain className="w-6 h-6 text-blue-500" />
-                </div>
-                <CardTitle className="text-xl">Chain-of-Thought</CardTitle>
-                <CardDescription className="text-base">Transparent reasoning before every research task. See how the agent thinks.</CardDescription>
-              </CardHeader>
-            </Card>
-            <Card className="hover-elevate border-accent/10 bg-card/50 backdrop-blur-sm p-2 group">
-              <CardHeader className="gap-3">
-                <div className="p-2 bg-green-500/10 rounded-lg w-fit group-hover:bg-green-500/20 transition-colors">
-                  <Search className="w-6 h-6 text-green-500" />
-                </div>
-                <CardTitle className="text-xl">Deep Information Extraction</CardTitle>
-                <CardDescription className="text-base">Scours the internet to find the most relevant and up-to-date data for your topics.</CardDescription>
-              </CardHeader>
-            </Card>
-            <Card className="hover-elevate border-muted/10 bg-card/50 backdrop-blur-sm p-2 group">
-              <CardHeader className="gap-3">
-                <div className="p-2 bg-purple-500/10 rounded-lg w-fit group-hover:bg-purple-500/20 transition-colors">
-                  <Download className="w-6 h-6 text-purple-500" />
-                </div>
-                <CardTitle className="text-xl">Instant Documentation</CardTitle>
-                <CardDescription className="text-base">Generate high-quality PDF and Word documents from your research findings automatically.</CardDescription>
-              </CardHeader>
-            </Card>
+          <div className="absolute inset-0 flex items-center justify-center pointer-events-none p-12">
+            <div className="grid grid-cols-2 gap-4 w-full h-full opacity-60">
+              <div className="bg-neutral-800 rounded-xl" />
+              <div className="bg-neutral-900 rounded-xl" />
+            </div>
           </div>
-        </section>
+        </div>
 
-        {/* Capabilities Grid */}
-        <section className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-8">
-          <Card className="hover-elevate border-primary/10 bg-gradient-to-b from-card to-background flex flex-col justify-between p-4 rounded-3xl">
-            <CardHeader className="gap-4">
-              <div className="bg-primary/10 p-4 rounded-2xl w-fit">
-                <FileText className="w-10 h-10 text-primary" />
-              </div>
-              <CardTitle className="text-2xl">Alive Documents</CardTitle>
-              <CardDescription className="text-lg leading-relaxed">Dynamic research that evolves as you interact. Real-time updates and formatting.</CardDescription>
-            </CardHeader>
-            <div className="p-4 pt-0">
-              <Button className="w-full h-12 rounded-2xl font-bold" variant="secondary">Launch Editor</Button>
+        {/* Floating Icons */}
+        <div className="flex justify-center gap-8 mt-16 flex-wrap">
+          {[Brain, Layout, Cpu, Globe, Zap].map((Icon, i) => (
+            <div key={i} className="w-16 h-16 rounded-full bg-neutral-50 flex items-center justify-center border border-neutral-100 hover:scale-110 transition-transform cursor-pointer">
+              <Icon className="w-6 h-6 text-neutral-400" />
             </div>
-          </Card>
+          ))}
+        </div>
+      </section>
 
-          <Card className="hover-elevate border-primary/10 bg-gradient-to-b from-card to-background flex flex-col justify-between p-4 rounded-3xl">
-            <CardHeader className="gap-4">
-              <div className="bg-primary/10 p-4 rounded-2xl w-fit">
-                <Layout className="w-10 h-10 text-primary" />
-              </div>
-              <CardTitle className="text-2xl">Design Conceptualizing</CardTitle>
-              <CardDescription className="text-lg leading-relaxed">Turn abstract research into professional UI/UX frameworks and design drafts.</CardDescription>
-            </CardHeader>
-            <div className="p-4 pt-0">
-              <Button className="w-full h-12 rounded-2xl font-bold" variant="secondary">View Canvas</Button>
+      {/* Feature Section */}
+      <section className="py-32 px-6 bg-white">
+        <div className="max-w-4xl mx-auto text-center space-y-24">
+          <div className="space-y-6">
+            <Badge variant="outline" className="rounded-full px-4 py-1 text-neutral-500 border-neutral-200 font-normal">Available at no charge</Badge>
+            <h2 className="text-4xl md:text-5xl font-medium text-neutral-900 leading-tight">
+              For developers <br />
+              Achieve new heights
+            </h2>
+            <div className="pt-4">
+              <Button className="h-12 px-10 rounded-full bg-black text-white hover:bg-neutral-800">Download</Button>
             </div>
-          </Card>
-
-          <Card className="hover-elevate border-primary/10 bg-gradient-to-b from-card to-background flex flex-col justify-between p-4 rounded-3xl">
-            <CardHeader className="gap-4">
-              <div className="bg-primary/10 p-4 rounded-2xl w-fit">
-                <BookOpen className="w-10 h-10 text-primary" />
-              </div>
-              <CardTitle className="text-2xl">Knowledge Synthesis</CardTitle>
-              <CardDescription className="text-lg leading-relaxed">Synthesize vast amounts of information into concise, structured knowledge bases.</CardDescription>
-            </CardHeader>
-            <div className="p-4 pt-0">
-              <Button className="w-full h-12 rounded-2xl font-bold" variant="secondary">Browse Wiki</Button>
-            </div>
-          </Card>
-
-          <Card className="hover-elevate border-primary/10 bg-gradient-to-b from-card to-background flex flex-col justify-between p-4 rounded-3xl">
-            <CardHeader className="gap-4">
-              <div className="bg-primary/10 p-4 rounded-2xl w-fit">
-                <ShieldCheck className="w-10 h-10 text-primary" />
-              </div>
-              <CardTitle className="text-2xl">Architectural Logic</CardTitle>
-              <CardDescription className="text-lg leading-relaxed">Deep analysis of complex systems and architectures, powered by advanced reasoning.</CardDescription>
-            </CardHeader>
-            <div className="p-4 pt-0">
-              <Button className="w-full h-12 rounded-2xl font-bold" variant="secondary">Explore Engine</Button>
-            </div>
-          </Card>
-        </section>
-
-        {/* Sign Up Form Section */}
-        <section id="pricing" className="bg-card rounded-[3rem] border p-8 md:p-20 shadow-2xl max-w-5xl mx-auto relative overflow-hidden">
-          <div className="absolute top-0 right-0 w-64 h-64 bg-primary/10 blur-[100px] -z-10" />
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-16 items-center">
-            <div>
-              <h2 className="text-4xl md:text-6xl font-bold mb-6 leading-tight">Elevate Your <br /><span className="text-primary">Intelligence</span></h2>
-              <p className="text-xl text-muted-foreground mb-10">
-                Join our private beta and experience the next generation of autonomous research and documentation.
-              </p>
-              <div className="space-y-6">
-                <div className="flex items-center gap-4">
-                  <div className="p-3 bg-primary/10 rounded-2xl">
-                    <Zap className="w-6 h-6 text-primary" />
-                  </div>
-                  <span className="text-lg font-medium">Instant Alive Documents</span>
-                </div>
-                <div className="flex items-center gap-4">
-                  <div className="p-3 bg-primary/10 rounded-2xl">
-                    <Cpu className="w-6 h-6 text-primary" />
-                  </div>
-                  <span className="text-lg font-medium">Chain-of-Thought Reasoning</span>
-                </div>
-              </div>
-            </div>
-
-            <Card className="border shadow-2xl rounded-3xl p-4 bg-background">
-              <CardHeader>
-                <CardTitle className="text-2xl font-bold">Get Early Access</CardTitle>
-                <CardDescription className="text-base">Limited spots available for the beta launch.</CardDescription>
-              </CardHeader>
-              <CardContent>
-                <Form {...form}>
-                  <form className="space-y-6">
-                    <FormField
-                      control={form.control}
-                      name="email"
-                      render={({ field }) => (
-                        <FormItem>
-                          <FormLabel className="font-bold">Work Email</FormLabel>
-                          <FormControl>
-                            <Input className="h-12 rounded-xl bg-muted/50 border-none focus:bg-background transition-colors" placeholder="name@company.com" {...field} />
-                          </FormControl>
-                          <FormMessage />
-                        </FormItem>
-                      )}
-                    />
-                    <FormField
-                      control={form.control}
-                      name="password"
-                      render={({ field }) => (
-                        <FormItem>
-                          <FormLabel className="font-bold">Create Password</FormLabel>
-                          <FormControl>
-                            <Input className="h-12 rounded-xl bg-muted/50 border-none focus:bg-background transition-colors" type="password" placeholder="••••••••" {...field} />
-                          </FormControl>
-                          <FormMessage />
-                        </FormItem>
-                      )}
-                    />
-                    <Button className="w-full h-14 rounded-2xl text-lg font-bold shadow-lg shadow-primary/20 hover-elevate active-elevate-2" type="button">
-                      <UserPlus className="w-5 h-5 mr-2" />
-                      Join the Beta
-                    </Button>
-                  </form>
-                </Form>
-              </CardContent>
-            </Card>
           </div>
-        </section>
-      </main>
 
-      <footer className="border-t py-20 px-6 bg-muted/20 mt-32">
-        <div className="max-w-6xl mx-auto flex flex-col md:flex-row justify-between items-start gap-12">
-          <div className="space-y-4">
-            <div className="flex items-center gap-2 font-bold text-2xl tracking-tight">
-              <div className="bg-primary p-1.5 rounded-lg">
-                <Brain className="w-6 h-6 text-primary-foreground" />
-              </div>
-              Antimomentum
+          <div className="space-y-6 pt-16">
+            <Badge variant="outline" className="rounded-full px-4 py-1 text-neutral-500 border-neutral-200 font-normal">Coming soon</Badge>
+            <h2 className="text-4xl md:text-5xl font-medium text-neutral-900 leading-tight">
+              For organizations <br />
+              Level up your entire team
+            </h2>
+            <div className="pt-4">
+              <Button variant="secondary" className="h-12 px-10 rounded-full bg-neutral-100 text-black hover:bg-neutral-200">Notify me</Button>
             </div>
-            <p className="text-muted-foreground max-w-xs">
-              The universal workspace for high-level research, deep analysis, and professional documentation.
-            </p>
           </div>
-          <div className="grid grid-cols-2 sm:grid-cols-3 gap-16">
+        </div>
+      </section>
+
+      <footer className="bg-[#fafafa] border-t border-neutral-100 py-32 px-6">
+        <div className="max-w-7xl mx-auto flex flex-col md:flex-row justify-between items-start gap-16">
+          <div className="space-y-6">
+            <div className="flex items-center gap-2 group cursor-pointer">
+              <svg viewBox="0 0 24 24" className="w-6 h-6 fill-primary">
+                <path d="M12 2L2 19h20L12 2zm0 3.8l7.5 12.7H4.5L12 5.8z" />
+              </svg>
+              <span className="text-xl font-medium tracking-tight text-neutral-900">Google <span className="font-normal text-neutral-500">Antigravity</span></span>
+            </div>
+            <p className="text-neutral-500 text-sm">Empowering the next generation of researchers.</p>
+          </div>
+          
+          <div className="grid grid-cols-2 sm:grid-cols-4 gap-12 text-sm">
             <div className="space-y-4">
-              <h4 className="font-bold text-sm uppercase tracking-widest text-primary">Product</h4>
-              <ul className="space-y-2 text-muted-foreground">
-                <li><Link href="/capabilities">Capabilities</Link></li>
-                <li><Link href="#">Features</Link></li>
-                <li><Link href="#">Pricing</Link></li>
+              <h4 className="font-medium text-black">Product</h4>
+              <ul className="space-y-3 text-neutral-500">
+                <li>Overview</li>
+                <li>Pricing</li>
+                <li>Documentation</li>
               </ul>
             </div>
             <div className="space-y-4">
-              <h4 className="font-bold text-sm uppercase tracking-widest text-primary">Company</h4>
-              <ul className="space-y-2 text-muted-foreground">
-                <li><Link href="#">About</Link></li>
-                <li><Link href="#">Blog</Link></li>
-                <li><Link href="#">Careers</Link></li>
+              <h4 className="font-medium text-black">Solutions</h4>
+              <ul className="space-y-3 text-neutral-500">
+                <li>Enterprise</li>
+                <li>Startups</li>
+                <li>Education</li>
               </ul>
             </div>
             <div className="space-y-4">
-              <h4 className="font-bold text-sm uppercase tracking-widest text-primary">Legal</h4>
-              <ul className="space-y-2 text-muted-foreground">
-                <li><Link href="#">Privacy</Link></li>
-                <li><Link href="#">Terms</Link></li>
-                <li><Link href="#">Contact</Link></li>
+              <h4 className="font-medium text-black">Company</h4>
+              <ul className="space-y-3 text-neutral-500">
+                <li>About</li>
+                <li>Careers</li>
+                <li>Blog</li>
+              </ul>
+            </div>
+            <div className="space-y-4">
+              <h4 className="font-medium text-black">Social</h4>
+              <ul className="space-y-3 text-neutral-500">
+                <li>Twitter</li>
+                <li>LinkedIn</li>
+                <li>YouTube</li>
               </ul>
             </div>
           </div>
         </div>
-        <div className="max-w-6xl mx-auto mt-20 pt-8 border-t border-muted text-center text-sm text-muted-foreground">
-          © 2026 Antimomentum AI. Empowering the future of research.
+        <div className="max-w-7xl mx-auto mt-24 pt-8 border-t border-neutral-200 flex flex-col sm:flex-row justify-between items-center gap-4 text-xs text-neutral-500">
+          <p>© 2026 Google Antigravity. All rights reserved.</p>
+          <div className="flex gap-6">
+            <span>Privacy Policy</span>
+            <span>Terms of Service</span>
+            <span>Cookie Policy</span>
+          </div>
         </div>
       </footer>
     </div>
